@@ -10,4 +10,4 @@ class AdminManager {
 
 public:
     void addAdmin(int id);
-}
+};
