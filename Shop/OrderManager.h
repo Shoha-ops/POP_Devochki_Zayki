@@ -1,7 +1,7 @@
-#include <iostream>
+#pragma once
+
 #include <string>
 #include <vector>
-#include <fstream>
 #include "Core Classes.h"
 
 using namespace std;

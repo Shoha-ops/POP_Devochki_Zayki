@@ -1,17 +1,26 @@
-#include <iostream>
-#include <vector>
 #include <string>
-#include <fstream>
-#include "Core Classes.h"
+#include <vector>
 
 using namespace std;
 
-class Shop {
-    int id;
-    string name;
-    vector<Product> products;
-
+// Shop entity used by the shop manager and future admin/user integrations.
+class Shop
+{
 public:
-    void addProduct(Product p);
-    void updateStock(int id, int qty);
+    // Public fields are kept simple for the template stage.
+    int id;
+
+    string shopName;
+    string ownerName;
+
+    string login;
+    string password;
+    string email;
+
+    // The admin flow can flip this when the shop is accepted.
+    bool approved;
+
+    // Product and order identifiers are stored as lightweight references.
+    vector<int> products;
+    vector<int> orders;
 };
