@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include "Core Classes.h"
 
 using namespace std;
 
