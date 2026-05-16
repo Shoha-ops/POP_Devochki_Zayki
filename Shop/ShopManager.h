@@ -12,8 +12,7 @@
 
 using namespace std;
 
-struct ShopProductRecord
-{
+struct ShopProductRecord {
     int id;
     string name;
     string description;
@@ -25,8 +24,7 @@ struct ShopProductRecord
     double rating;
 };
 
-struct ShopOrderItemRecord
-{
+struct ShopOrderItemRecord {
     int productId;
     string productName;
     string shopLogin;
@@ -34,8 +32,7 @@ struct ShopOrderItemRecord
     double price;
 };
 
-struct ShopOrderRecord
-{
+struct ShopOrderRecord {
     int id;
     string userLogin;
     vector<ShopOrderItemRecord> items;
@@ -47,44 +44,38 @@ struct ShopOrderRecord
 
 // Shop module template with a working registration/login flow.
 // Other teams can extend the declared hooks later without changing the entry flow.
-class ShopManager
-{
+class ShopManager {
 private:
     vector<Shop> shops;
     string storagePath;
     int nextShopId;
     string currentShopLogin;
 
-    vector<string> splitText(const string& text, char delimiter)
-    {
+    vector<string> splitText(const string& text, char delimiter) {
         vector<string> parts;
         string part;
         stringstream stream(text);
 
-        while (getline(stream, part, delimiter))
-        {
+        while (getline(stream, part, delimiter)) {
             parts.push_back(part);
         }
 
         return parts;
     }
 
-    string cleanField(string value)
-    {
+    string cleanField(string value) {
         replace(value.begin(), value.end(), '|', '/');
         replace(value.begin(), value.end(), ';', ',');
         replace(value.begin(), value.end(), '#', '-');
         return value;
     }
 
-    vector<ShopProductRecord> loadProducts()
-    {
+    vector<ShopProductRecord> loadProducts() {
         vector<ShopProductRecord> products;
         ifstream file("products.txt");
         string line;
 
-        while (getline(file, line))
-        {
+        while (getline(file, line)) {
             vector<string> parts = splitText(line, '|');
             if (parts.size() < 9) continue;
 
@@ -104,11 +95,9 @@ private:
         return products;
     }
 
-    void saveProducts(const vector<ShopProductRecord>& products)
-    {
+    void saveProducts(const vector<ShopProductRecord>& products) {
         ofstream file("products.txt", ios::trunc);
-        for (const ShopProductRecord& product : products)
-        {
+        for (const ShopProductRecord& product : products) {
             file << product.id << '|'
                  << cleanField(product.name) << '|'
                  << cleanField(product.description) << '|'
@@ -121,33 +110,26 @@ private:
         }
     }
 
-    int nextProductId(const vector<ShopProductRecord>& products)
-    {
+    int nextProductId(const vector<ShopProductRecord>& products) {
         int nextId = 1;
-        for (const ShopProductRecord& product : products)
-        {
-            if (product.id >= nextId)
-            {
+        for (const ShopProductRecord& product : products) {
+            if (product.id >= nextId) {
                 nextId = product.id + 1;
             }
         }
         return nextId;
     }
 
-    ShopProductRecord* findProduct(vector<ShopProductRecord>& products, int productId)
-    {
-        for (ShopProductRecord& product : products)
-        {
-            if (product.id == productId)
-            {
+    ShopProductRecord* findProduct(vector<ShopProductRecord>& products, int productId) {
+        for (ShopProductRecord& product : products) {
+            if (product.id == productId) {
                 return &product;
             }
         }
         return nullptr;
     }
 
-    void printProduct(const ShopProductRecord& product)
-    {
+    void printProduct(const ShopProductRecord& product) {
         cout << "ID: " << product.id << '\n';
         cout << "Name: " << product.name << '\n';
         cout << "Description: " << product.description << '\n';
@@ -158,14 +140,12 @@ private:
         cout << "Rating: " << fixed << setprecision(1) << product.rating << "\n\n";
     }
 
-    vector<ShopOrderRecord> loadOrders()
-    {
+    vector<ShopOrderRecord> loadOrders() {
         vector<ShopOrderRecord> orders;
         ifstream file("orders.txt");
         string line;
 
-        while (getline(file, line))
-        {
+        while (getline(file, line)) {
             vector<string> parts = splitText(line, '|');
             if (parts.size() < 7) continue;
 
@@ -178,8 +158,7 @@ private:
             order.paymentStatus = parts[5];
 
             vector<string> itemParts = splitText(parts[6], ';');
-            for (const string& itemText : itemParts)
-            {
+            for (const string& itemText : itemParts) {
                 if (itemText.empty()) continue;
                 vector<string> fields = splitText(itemText, '#');
                 if (fields.size() < 5) continue;
@@ -199,11 +178,9 @@ private:
         return orders;
     }
 
-    void saveOrders(const vector<ShopOrderRecord>& orders)
-    {
+    void saveOrders(const vector<ShopOrderRecord>& orders) {
         ofstream file("orders.txt", ios::trunc);
-        for (const ShopOrderRecord& order : orders)
-        {
+        for (const ShopOrderRecord& order : orders) {
             file << order.id << '|'
                  << cleanField(order.userLogin) << '|'
                  << fixed << setprecision(2) << order.total << '|'
@@ -211,8 +188,7 @@ private:
                  << cleanField(order.address) << '|'
                  << cleanField(order.paymentStatus) << '|';
 
-            for (const ShopOrderItemRecord& item : order.items)
-            {
+            for (const ShopOrderItemRecord& item : order.items) {
                 file << item.productId << '#'
                      << cleanField(item.productName) << '#'
                      << cleanField(item.shopLogin) << '#'
@@ -224,12 +200,9 @@ private:
         }
     }
 
-    Shop* findShop(const string& login)
-    {
-        for (Shop& shop : shops)
-        {
-            if (shop.login == login)
-            {
+    Shop* findShop(const string& login) {
+        for (Shop& shop : shops) {
+            if (shop.login == login) {
                 return &shop;
             }
         }
@@ -237,21 +210,17 @@ private:
         return nullptr;
     }
 
-    void loadShops()
-    {
+    void loadShops() {
         shops.clear();
 
         ifstream inFile(storagePath);
-        if (!inFile.is_open())
-        {
+        if (!inFile.is_open()) {
             return;
         }
 
         string line;
-        while (getline(inFile, line))
-        {
-            if (line.empty())
-            {
+        while (getline(inFile, line)) {
+            if (line.empty()) {
                 continue;
             }
 
@@ -273,18 +242,15 @@ private:
             shop.approved = (approvedText == "1");
             shops.push_back(shop);
 
-            if (shop.id >= nextShopId)
-            {
+            if (shop.id >= nextShopId) {
                 nextShopId = shop.id + 1;
             }
         }
     }
 
-    void saveShops() const
-    {
+    void saveShops() const {
         ofstream outFile(storagePath, ios::trunc);
-        for (const Shop& shop : shops)
-        {
+        for (const Shop& shop : shops) {
             outFile << shop.id << '|' << shop.shopName << '|' << shop.ownerName << '|'
                     << shop.login << '|' << shop.password << '|' << shop.email << '|'
                     << (shop.approved ? "1" : "0") << '\n';
@@ -293,14 +259,12 @@ private:
 
 public:
     explicit ShopManager(const string& filePath = "shops.txt")
-        : storagePath(filePath), nextShopId(1)
-    {
+        : storagePath(filePath), nextShopId(1) {
         loadShops();
     }
 
     // Creates a shop profile and stores it in memory for this run.
-    void registerShop()
-    {
+    void registerShop() {
         Shop shop;
         shop.id = nextShopId++;
 
@@ -315,8 +279,7 @@ public:
         cout << "Login: ";
         getline(cin >> ws, shop.login);
 
-        if (findShop(shop.login) != nullptr)
-        {
+        if (findShop(shop.login) != nullptr) {
             cout << "Login already exists!\n";
             --nextShopId;
             return;
@@ -336,16 +299,13 @@ public:
     }
 
     // Returns 1 for approved shops, 2 for pending approval, 0 if the credentials do not match.
-    int loginShop(string login, string password)
-    {
+    int loginShop(string login, string password) {
         Shop* shop = findShop(login);
-        if (shop == nullptr || shop->password != password)
-        {
+        if (shop == nullptr || shop->password != password) {
             return 0;
         }
 
-        if (shop->approved)
-        {
+        if (shop->approved) {
             currentShopLogin = login;
             return 1;
         }
@@ -353,23 +313,20 @@ public:
         return 2;
     }
 
-    void logoutShop()
-    {
+    void logoutShop() {
         currentShopLogin.clear();
         cout << "\nShop logged out successfully!\n";
     }
 
     // Admin-facing actions for the shop queue.
-    void approveShop()
-    {
+    void approveShop() {
         string login;
 
         cout << "\nEnter shop login: ";
         getline(cin >> ws, login);
 
         Shop* shop = findShop(login);
-        if (shop == nullptr)
-        {
+        if (shop == nullptr) {
             cout << "Shop not found!\n";
             return;
         }
@@ -379,17 +336,14 @@ public:
         cout << "Shop approved successfully!\n";
     }
 
-    void rejectShop()
-    {
+    void rejectShop() {
         string login;
 
         cout << "\nEnter shop login: ";
         getline(cin >> ws, login);
 
-        for (auto it = shops.begin(); it != shops.end(); ++it)
-        {
-            if (it->login == login)
-            {
+        for (auto it = shops.begin(); it != shops.end(); ++it) {
+            if (it->login == login) {
                 shops.erase(it);
                 saveShops();
                 cout << "Shop rejected and removed!\n";
@@ -400,14 +354,11 @@ public:
         cout << "Shop not found!\n";
     }
 
-    void showPendingShops()
-    {
+    void showPendingShops() {
         cout << "\n===== PENDING SHOPS =====\n";
 
-        for (const Shop& shop : shops)
-        {
-            if (!shop.approved)
-            {
+        for (const Shop& shop : shops) {
+            if (!shop.approved) {
                 cout << "Shop: " << shop.shopName << '\n';
                 cout << "Owner: " << shop.ownerName << '\n';
                 cout << "Login: " << shop.login << '\n';
@@ -416,22 +367,18 @@ public:
         }
     }
 
-    void showAllShops()
-    {
+    void showAllShops() {
         cout << "\n===== ALL SHOPS =====\n";
 
-        for (const Shop& shop : shops)
-        {
+        for (const Shop& shop : shops) {
             cout << shop.shopName << " | " << shop.login << " | "
                  << (shop.approved ? "approved" : "pending") << '\n';
         }
     }
 
-    void addProduct()
-    {
+    void addProduct() {
         Shop* shop = findShop(currentShopLogin);
-        if (shop == nullptr)
-        {
+        if (shop == nullptr) {
             cout << "No active shop session.\n";
             return;
         }
@@ -455,8 +402,7 @@ public:
         cout << "Category: ";
         getline(cin >> ws, product.category);
 
-        if (product.price <= 0 || product.stock < 0)
-        {
+        if (product.price <= 0 || product.stock < 0) {
             cout << "Invalid price or stock.\n";
             return;
         }
@@ -466,8 +412,7 @@ public:
         cout << "Product added. ID: " << product.id << '\n';
     }
 
-    void editProduct()
-    {
+    void editProduct() {
         vector<ShopProductRecord> products = loadProducts();
         int id;
 
@@ -475,8 +420,7 @@ public:
         cin >> id;
 
         ShopProductRecord* product = findProduct(products, id);
-        if (product == nullptr || product->shopLogin != currentShopLogin)
-        {
+        if (product == nullptr || product->shopLogin != currentShopLogin) {
             cout << "Product not found in your shop.\n";
             return;
         }
@@ -494,18 +438,15 @@ public:
         cout << "Product updated.\n";
     }
 
-    void deleteProduct()
-    {
+    void deleteProduct() {
         vector<ShopProductRecord> products = loadProducts();
         int id;
 
         cout << "\nEnter product ID: ";
         cin >> id;
 
-        for (auto it = products.begin(); it != products.end(); ++it)
-        {
-            if (it->id == id && it->shopLogin == currentShopLogin)
-            {
+        for (auto it = products.begin(); it != products.end(); ++it) {
+            if (it->id == id && it->shopLogin == currentShopLogin) {
                 products.erase(it);
                 saveProducts(products);
                 cout << "Product deleted.\n";
@@ -516,16 +457,13 @@ public:
         cout << "Product not found in your shop.\n";
     }
 
-    void showProducts()
-    {
+    void showProducts() {
         cout << "\n===== YOUR PRODUCTS =====\n";
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
 
-        for (const ShopProductRecord& product : products)
-        {
-            if (product.shopLogin == currentShopLogin)
-            {
+        for (const ShopProductRecord& product : products) {
+            if (product.shopLogin == currentShopLogin) {
                 printProduct(product);
                 found = true;
             }
@@ -534,16 +472,13 @@ public:
         if (!found) cout << "No products yet.\n";
     }
 
-    void showCatalog()
-    {
+    void showCatalog() {
         cout << "\n===== PRODUCT CATALOG =====\n";
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
 
-        for (const ShopProductRecord& product : products)
-        {
-            if (product.stock > 0)
-            {
+        for (const ShopProductRecord& product : products) {
+            if (product.stock > 0) {
                 printProduct(product);
                 found = true;
             }
@@ -552,20 +487,17 @@ public:
         if (!found) cout << "Catalog is empty.\n";
     }
 
-    void searchProducts()
-    {
+    void searchProducts() {
         string query;
         cout << "\nSearch: ";
         getline(cin >> ws, query);
 
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
-        for (const ShopProductRecord& product : products)
-        {
+        for (const ShopProductRecord& product : products) {
             if (product.name.find(query) != string::npos ||
                 product.description.find(query) != string::npos ||
-                product.category.find(query) != string::npos)
-            {
+                product.category.find(query) != string::npos) {
                 printProduct(product);
                 found = true;
             }
@@ -574,18 +506,15 @@ public:
         if (!found) cout << "No products found.\n";
     }
 
-    void filterProducts()
-    {
+    void filterProducts() {
         string category;
         cout << "\nCategory: ";
         getline(cin >> ws, category);
 
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
-        for (const ShopProductRecord& product : products)
-        {
-            if (product.category == category && product.stock > 0)
-            {
+        for (const ShopProductRecord& product : products) {
+            if (product.category == category && product.stock > 0) {
                 printProduct(product);
                 found = true;
             }
@@ -594,22 +523,19 @@ public:
         if (!found) cout << "No products in this category.\n";
     }
 
-    void sortProducts()
-    {
+    void sortProducts() {
         vector<ShopProductRecord> products = loadProducts();
         sort(products.begin(), products.end(), [](const ShopProductRecord& left, const ShopProductRecord& right) {
             return left.price < right.price;
         });
 
         cout << "\n===== PRODUCTS BY PRICE =====\n";
-        for (const ShopProductRecord& product : products)
-        {
+        for (const ShopProductRecord& product : products) {
             if (product.stock > 0) printProduct(product);
         }
     }
 
-    void updateStock()
-    {
+    void updateStock() {
         vector<ShopProductRecord> products = loadProducts();
         int id;
         int stock;
@@ -620,14 +546,12 @@ public:
         cin >> stock;
 
         ShopProductRecord* product = findProduct(products, id);
-        if (product == nullptr || product->shopLogin != currentShopLogin)
-        {
+        if (product == nullptr || product->shopLogin != currentShopLogin) {
             cout << "Product not found in your shop.\n";
             return;
         }
 
-        if (stock < 0)
-        {
+        if (stock < 0) {
             cout << "Stock cannot be negative.\n";
             return;
         }
@@ -637,29 +561,23 @@ public:
         cout << "Stock updated.\n";
     }
 
-    void showShopOrders()
-    {
+    void showShopOrders() {
         cout << "\n===== SHOP ORDERS =====\n";
         vector<ShopOrderRecord> orders = loadOrders();
         bool found = false;
 
-        for (const ShopOrderRecord& order : orders)
-        {
+        for (const ShopOrderRecord& order : orders) {
             bool hasShopItem = false;
-            for (const ShopOrderItemRecord& item : order.items)
-            {
+            for (const ShopOrderItemRecord& item : order.items) {
                 if (item.shopLogin == currentShopLogin) hasShopItem = true;
             }
 
-            if (hasShopItem)
-            {
+            if (hasShopItem) {
                 cout << "Order #" << order.id << " | User: " << order.userLogin
                      << " | Status: " << order.status
                      << " | Payment: " << order.paymentStatus << '\n';
-                for (const ShopOrderItemRecord& item : order.items)
-                {
-                    if (item.shopLogin == currentShopLogin)
-                    {
+                for (const ShopOrderItemRecord& item : order.items) {
+                    if (item.shopLogin == currentShopLogin) {
                         cout << "  " << item.productName << " x" << item.quantity << '\n';
                     }
                 }
@@ -670,39 +588,32 @@ public:
         if (!found) cout << "No orders for your shop.\n";
     }
 
-    void acceptOrder()
-    {
+    void acceptOrder() {
         updateShopOrderStatus("Accepted");
     }
 
-    void declineOrder()
-    {
+    void declineOrder() {
         updateShopOrderStatus("Declined");
     }
 
-    void completeOrder()
-    {
+    void completeOrder() {
         updateShopOrderStatus("Completed");
     }
 
-    void updateShopOrderStatus(const string& status)
-    {
+    void updateShopOrderStatus(const string& status) {
         vector<ShopOrderRecord> orders = loadOrders();
         int id;
 
         cout << "\nEnter order ID: ";
         cin >> id;
 
-        for (ShopOrderRecord& order : orders)
-        {
+        for (ShopOrderRecord& order : orders) {
             bool hasShopItem = false;
-            for (const ShopOrderItemRecord& item : order.items)
-            {
+            for (const ShopOrderItemRecord& item : order.items) {
                 if (item.shopLogin == currentShopLogin) hasShopItem = true;
             }
 
-            if (order.id == id && hasShopItem)
-            {
+            if (order.id == id && hasShopItem) {
                 order.status = status;
                 saveOrders(orders);
                 cout << "Order status updated to " << status << ".\n";

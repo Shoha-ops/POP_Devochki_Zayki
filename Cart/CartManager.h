@@ -2,8 +2,7 @@
 
 #include "Cart.h"
 
-class CartManager
-{
+class CartManager {
 public:
     void addToCart();
 

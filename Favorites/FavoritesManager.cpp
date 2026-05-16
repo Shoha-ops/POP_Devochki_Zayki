@@ -8,8 +8,7 @@
 
 using namespace std;
 
-struct FavoriteProductRecord
-{
+struct FavoriteProductRecord {
     int id;
     string name;
     string description;
@@ -20,28 +19,24 @@ struct FavoriteProductRecord
     double rating;
 };
 
-vector<string> splitFavoriteLine(const string& line)
-{
+vector<string> splitFavoriteLine(const string& line) {
     vector<string> parts;
     string part;
     stringstream stream(line);
 
-    while (getline(stream, part, '|'))
-    {
+    while (getline(stream, part, '|')) {
         parts.push_back(part);
     }
 
     return parts;
 }
 
-vector<FavoriteProductRecord> loadFavoriteProducts()
-{
+vector<FavoriteProductRecord> loadFavoriteProducts() {
     vector<FavoriteProductRecord> products;
     ifstream file("products.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitFavoriteLine(line);
         if (parts.size() < 9) continue;
 
@@ -60,20 +55,16 @@ vector<FavoriteProductRecord> loadFavoriteProducts()
     return products;
 }
 
-const FavoriteProductRecord* findFavoriteProduct(const vector<FavoriteProductRecord>& products, int productId)
-{
-    for (const FavoriteProductRecord& product : products)
-    {
-        if (product.id == productId)
-        {
+const FavoriteProductRecord* findFavoriteProduct(const vector<FavoriteProductRecord>& products, int productId) {
+    for (const FavoriteProductRecord& product : products) {
+        if (product.id == productId) {
             return &product;
         }
     }
     return nullptr;
 }
 
-void printFavoriteProduct(const FavoriteProductRecord& product)
-{
+void printFavoriteProduct(const FavoriteProductRecord& product) {
     cout << "ID: " << product.id << '\n';
     cout << "Name: " << product.name << '\n';
     cout << "Description: " << product.description << '\n';
@@ -84,14 +75,12 @@ void printFavoriteProduct(const FavoriteProductRecord& product)
     cout << "Rating: " << fixed << setprecision(1) << product.rating << "\n\n";
 }
 
-vector<pair<string, int>> loadFavoriteList()
-{
+vector<pair<string, int>> loadFavoriteList() {
     vector<pair<string, int>> favorites;
     ifstream file("favorites.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitFavoriteLine(line);
         if (parts.size() < 2) continue;
         favorites.push_back(make_pair(parts[0], stoi(parts[1])));
@@ -100,25 +89,21 @@ vector<pair<string, int>> loadFavoriteList()
     return favorites;
 }
 
-void saveFavoriteList(const vector<pair<string, int>>& favorites)
-{
+void saveFavoriteList(const vector<pair<string, int>>& favorites) {
     ofstream file("favorites.txt", ios::trunc);
-    for (const pair<string, int>& favorite : favorites)
-    {
+    for (const pair<string, int>& favorite : favorites) {
         file << favorite.first << '|' << favorite.second << '\n';
     }
 }
 
-static string askFavoriteUser()
-{
+static string askFavoriteUser() {
     string userLogin;
     cout << "User login: ";
     getline(cin >> ws, userLogin);
     return userLogin;
 }
 
-void FavoritesManager::addFavorite()
-{
+void FavoritesManager::addFavorite() {
     string userLogin = askFavoriteUser();
     int productId;
 
@@ -126,17 +111,14 @@ void FavoritesManager::addFavorite()
     cin >> productId;
 
     vector<FavoriteProductRecord> products = loadFavoriteProducts();
-    if (findFavoriteProduct(products, productId) == nullptr)
-    {
+    if (findFavoriteProduct(products, productId) == nullptr) {
         cout << "Product not found.\n";
         return;
     }
 
     vector<pair<string, int>> favorites = loadFavoriteList();
-    for (const pair<string, int>& favorite : favorites)
-    {
-        if (favorite.first == userLogin && favorite.second == productId)
-        {
+    for (const pair<string, int>& favorite : favorites) {
+        if (favorite.first == userLogin && favorite.second == productId) {
             cout << "Product is already in favorites.\n";
             return;
         }
@@ -147,8 +129,7 @@ void FavoritesManager::addFavorite()
     cout << "Added to favorites.\n";
 }
 
-void FavoritesManager::removeFavorite()
-{
+void FavoritesManager::removeFavorite() {
     string userLogin = askFavoriteUser();
     int productId;
 
@@ -156,10 +137,8 @@ void FavoritesManager::removeFavorite()
     cin >> productId;
 
     vector<pair<string, int>> favorites = loadFavoriteList();
-    for (auto it = favorites.begin(); it != favorites.end(); ++it)
-    {
-        if (it->first == userLogin && it->second == productId)
-        {
+    for (auto it = favorites.begin(); it != favorites.end(); ++it) {
+        if (it->first == userLogin && it->second == productId) {
             favorites.erase(it);
             saveFavoriteList(favorites);
             cout << "Removed from favorites.\n";
@@ -170,21 +149,18 @@ void FavoritesManager::removeFavorite()
     cout << "Favorite not found.\n";
 }
 
-void FavoritesManager::showFavorites()
-{
+void FavoritesManager::showFavorites() {
     string userLogin = askFavoriteUser();
     vector<pair<string, int>> favorites = loadFavoriteList();
     vector<FavoriteProductRecord> products = loadFavoriteProducts();
     bool found = false;
 
     cout << "\n===== FAVORITES =====\n";
-    for (const pair<string, int>& favorite : favorites)
-    {
+    for (const pair<string, int>& favorite : favorites) {
         if (favorite.first != userLogin) continue;
 
         const FavoriteProductRecord* product = findFavoriteProduct(products, favorite.second);
-        if (product != nullptr)
-        {
+        if (product != nullptr) {
             printFavoriteProduct(*product);
             found = true;
         }

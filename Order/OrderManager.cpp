@@ -9,8 +9,7 @@
 
 using namespace std;
 
-struct OrderProductRecord
-{
+struct OrderProductRecord {
     int id;
     string name;
     string description;
@@ -22,15 +21,13 @@ struct OrderProductRecord
     double rating;
 };
 
-struct OrderCartItemRecord
-{
+struct OrderCartItemRecord {
     string userLogin;
     int productId;
     int quantity;
 };
 
-struct OrderItemRecord
-{
+struct OrderItemRecord {
     int productId;
     string productName;
     string shopLogin;
@@ -38,8 +35,7 @@ struct OrderItemRecord
     double price;
 };
 
-struct OrderRecord
-{
+struct OrderRecord {
     int id;
     string userLogin;
     vector<OrderItemRecord> items;
@@ -49,36 +45,31 @@ struct OrderRecord
     string paymentStatus;
 };
 
-vector<string> splitOrderText(const string& text, char delimiter)
-{
+vector<string> splitOrderText(const string& text, char delimiter) {
     vector<string> parts;
     string part;
     stringstream stream(text);
 
-    while (getline(stream, part, delimiter))
-    {
+    while (getline(stream, part, delimiter)) {
         parts.push_back(part);
     }
 
     return parts;
 }
 
-string cleanOrderField(string value)
-{
+string cleanOrderField(string value) {
     replace(value.begin(), value.end(), '|', '/');
     replace(value.begin(), value.end(), ';', ',');
     replace(value.begin(), value.end(), '#', '-');
     return value;
 }
 
-vector<OrderProductRecord> loadOrderProducts()
-{
+vector<OrderProductRecord> loadOrderProducts() {
     vector<OrderProductRecord> products;
     ifstream file("products.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 9) continue;
 
@@ -98,11 +89,9 @@ vector<OrderProductRecord> loadOrderProducts()
     return products;
 }
 
-void saveOrderProducts(const vector<OrderProductRecord>& products)
-{
+void saveOrderProducts(const vector<OrderProductRecord>& products) {
     ofstream file("products.txt", ios::trunc);
-    for (const OrderProductRecord& product : products)
-    {
+    for (const OrderProductRecord& product : products) {
         file << product.id << '|'
              << cleanOrderField(product.name) << '|'
              << cleanOrderField(product.description) << '|'
@@ -115,26 +104,21 @@ void saveOrderProducts(const vector<OrderProductRecord>& products)
     }
 }
 
-OrderProductRecord* findOrderProduct(vector<OrderProductRecord>& products, int productId)
-{
-    for (OrderProductRecord& product : products)
-    {
-        if (product.id == productId)
-        {
+OrderProductRecord* findOrderProduct(vector<OrderProductRecord>& products, int productId) {
+    for (OrderProductRecord& product : products) {
+        if (product.id == productId) {
             return &product;
         }
     }
     return nullptr;
 }
 
-vector<OrderCartItemRecord> loadOrderCart()
-{
+vector<OrderCartItemRecord> loadOrderCart() {
     vector<OrderCartItemRecord> cart;
     ifstream file("cart.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 3) continue;
 
@@ -148,23 +132,19 @@ vector<OrderCartItemRecord> loadOrderCart()
     return cart;
 }
 
-void saveOrderCart(const vector<OrderCartItemRecord>& cart)
-{
+void saveOrderCart(const vector<OrderCartItemRecord>& cart) {
     ofstream file("cart.txt", ios::trunc);
-    for (const OrderCartItemRecord& item : cart)
-    {
+    for (const OrderCartItemRecord& item : cart) {
         file << item.userLogin << '|' << item.productId << '|' << item.quantity << '\n';
     }
 }
 
-vector<OrderRecord> loadOrders()
-{
+vector<OrderRecord> loadOrders() {
     vector<OrderRecord> orders;
     ifstream file("orders.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 7) continue;
 
@@ -177,8 +157,7 @@ vector<OrderRecord> loadOrders()
         order.paymentStatus = parts[5];
 
         vector<string> itemParts = splitOrderText(parts[6], ';');
-        for (const string& itemText : itemParts)
-        {
+        for (const string& itemText : itemParts) {
             if (itemText.empty()) continue;
             vector<string> fields = splitOrderText(itemText, '#');
             if (fields.size() < 5) continue;
@@ -198,11 +177,9 @@ vector<OrderRecord> loadOrders()
     return orders;
 }
 
-void saveOrders(const vector<OrderRecord>& orders)
-{
+void saveOrders(const vector<OrderRecord>& orders) {
     ofstream file("orders.txt", ios::trunc);
-    for (const OrderRecord& order : orders)
-    {
+    for (const OrderRecord& order : orders) {
         file << order.id << '|'
              << cleanOrderField(order.userLogin) << '|'
              << fixed << setprecision(2) << order.total << '|'
@@ -210,8 +187,7 @@ void saveOrders(const vector<OrderRecord>& orders)
              << cleanOrderField(order.address) << '|'
              << cleanOrderField(order.paymentStatus) << '|';
 
-        for (const OrderItemRecord& item : order.items)
-        {
+        for (const OrderItemRecord& item : order.items) {
             file << item.productId << '#'
                  << cleanOrderField(item.productName) << '#'
                  << cleanOrderField(item.shopLogin) << '#'
@@ -223,41 +199,33 @@ void saveOrders(const vector<OrderRecord>& orders)
     }
 }
 
-int getNextOrderId(const vector<OrderRecord>& orders)
-{
+int getNextOrderId(const vector<OrderRecord>& orders) {
     int nextId = 1;
-    for (const OrderRecord& order : orders)
-    {
-        if (order.id >= nextId)
-        {
+    for (const OrderRecord& order : orders) {
+        if (order.id >= nextId) {
             nextId = order.id + 1;
         }
     }
     return nextId;
 }
 
-OrderRecord* findOrder(vector<OrderRecord>& orders, int orderId)
-{
-    for (OrderRecord& order : orders)
-    {
-        if (order.id == orderId)
-        {
+OrderRecord* findOrder(vector<OrderRecord>& orders, int orderId) {
+    for (OrderRecord& order : orders) {
+        if (order.id == orderId) {
             return &order;
         }
     }
     return nullptr;
 }
 
-string askOrderUser()
-{
+string askOrderUser() {
     string userLogin;
     cout << "User login: ";
     getline(cin >> ws, userLogin);
     return userLogin;
 }
 
-void OrderManager::createOrder()
-{
+void OrderManager::createOrder() {
     string userLogin = askOrderUser();
     string address;
 
@@ -276,19 +244,16 @@ void OrderManager::createOrder()
     order.total = 0.0;
 
     bool hasItems = false;
-    for (const OrderCartItemRecord& cartItem : cart)
-    {
+    for (const OrderCartItemRecord& cartItem : cart) {
         if (cartItem.userLogin != userLogin) continue;
 
         OrderProductRecord* product = findOrderProduct(products, cartItem.productId);
-        if (product == nullptr)
-        {
+        if (product == nullptr) {
             cout << "A product from cart no longer exists. Order cancelled.\n";
             return;
         }
 
-        if (cartItem.quantity <= 0 || cartItem.quantity > product->stock)
-        {
+        if (cartItem.quantity <= 0 || cartItem.quantity > product->stock) {
             cout << "Not enough stock for " << product->name << ". Available: " << product->stock << '\n';
             return;
         }
@@ -305,8 +270,7 @@ void OrderManager::createOrder()
         hasItems = true;
     }
 
-    if (!hasItems)
-    {
+    if (!hasItems) {
         cout << "Cart is empty.\n";
         return;
     }
@@ -323,8 +287,7 @@ void OrderManager::createOrder()
     cout << "Order created. ID: " << order.id << ", total: " << order.total << '\n';
 }
 
-void OrderManager::cancelOrder()
-{
+void OrderManager::cancelOrder() {
     string userLogin = askOrderUser();
     int orderId;
 
@@ -335,23 +298,19 @@ void OrderManager::cancelOrder()
     vector<OrderProductRecord> products = loadOrderProducts();
 
     OrderRecord* order = findOrder(orders, orderId);
-    if (order == nullptr || order->userLogin != userLogin)
-    {
+    if (order == nullptr || order->userLogin != userLogin) {
         cout << "Order not found.\n";
         return;
     }
 
-    if (order->status == "Completed" || order->status == "Cancelled")
-    {
+    if (order->status == "Completed" || order->status == "Cancelled") {
         cout << "Order cannot be cancelled.\n";
         return;
     }
 
-    for (const OrderItemRecord& item : order->items)
-    {
+    for (const OrderItemRecord& item : order->items) {
         OrderProductRecord* product = findOrderProduct(products, item.productId);
-        if (product != nullptr)
-        {
+        if (product != nullptr) {
             product->stock += item.quantity;
         }
     }
@@ -362,8 +321,7 @@ void OrderManager::cancelOrder()
     cout << "Order cancelled.\n";
 }
 
-void OrderManager::trackOrder()
-{
+void OrderManager::trackOrder() {
     int orderId;
 
     cout << "\nOrder ID: ";
@@ -372,8 +330,7 @@ void OrderManager::trackOrder()
     vector<OrderRecord> orders = loadOrders();
     OrderRecord* order = findOrder(orders, orderId);
 
-    if (order == nullptr)
-    {
+    if (order == nullptr) {
         cout << "Order not found.\n";
         return;
     }
@@ -385,8 +342,7 @@ void OrderManager::trackOrder()
          << "Total: " << order->total << '\n';
 }
 
-void OrderManager::updateOrderStatus()
-{
+void OrderManager::updateOrderStatus() {
     int orderId;
     string status;
 
@@ -398,8 +354,7 @@ void OrderManager::updateOrderStatus()
     vector<OrderRecord> orders = loadOrders();
     OrderRecord* order = findOrder(orders, orderId);
 
-    if (order == nullptr)
-    {
+    if (order == nullptr) {
         cout << "Order not found.\n";
         return;
     }
@@ -409,22 +364,19 @@ void OrderManager::updateOrderStatus()
     cout << "Order status updated.\n";
 }
 
-void OrderManager::showUserOrders()
-{
+void OrderManager::showUserOrders() {
     string userLogin = askOrderUser();
     vector<OrderRecord> orders = loadOrders();
     bool found = false;
 
     cout << "\n===== USER ORDERS =====\n";
-    for (const OrderRecord& order : orders)
-    {
+    for (const OrderRecord& order : orders) {
         if (order.userLogin != userLogin) continue;
 
         cout << "Order #" << order.id << " | " << order.status
              << " | " << order.paymentStatus
              << " | Total: " << order.total << '\n';
-        for (const OrderItemRecord& item : order.items)
-        {
+        for (const OrderItemRecord& item : order.items) {
             cout << "  " << item.productName << " x" << item.quantity << '\n';
         }
         found = true;
@@ -433,8 +385,7 @@ void OrderManager::showUserOrders()
     if (!found) cout << "No orders.\n";
 }
 
-void OrderManager::showShopOrders()
-{
+void OrderManager::showShopOrders() {
     string shopLogin;
 
     cout << "Shop login: ";
@@ -444,15 +395,12 @@ void OrderManager::showShopOrders()
     bool found = false;
 
     cout << "\n===== SHOP ORDERS =====\n";
-    for (const OrderRecord& order : orders)
-    {
+    for (const OrderRecord& order : orders) {
         bool printedHeader = false;
-        for (const OrderItemRecord& item : order.items)
-        {
+        for (const OrderItemRecord& item : order.items) {
             if (item.shopLogin != shopLogin) continue;
 
-            if (!printedHeader)
-            {
+            if (!printedHeader) {
                 cout << "Order #" << order.id << " | User: " << order.userLogin
                      << " | Status: " << order.status
                      << " | Payment: " << order.paymentStatus << '\n';

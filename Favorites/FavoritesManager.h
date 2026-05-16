@@ -1,7 +1,6 @@
 #pragma once
 
-class FavoritesManager
-{
+class FavoritesManager {
 public:
     void addFavorite();
 

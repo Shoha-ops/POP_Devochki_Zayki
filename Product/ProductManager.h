@@ -2,8 +2,7 @@
 
 #include "Product.h"
 
-class ProductManager
-{
+class ProductManager {
 public:
     void createProduct();
 

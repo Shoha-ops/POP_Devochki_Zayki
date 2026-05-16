@@ -9,8 +9,7 @@
 
 using namespace std;
 
-struct PaymentOrderItemRecord
-{
+struct PaymentOrderItemRecord {
     int productId;
     string productName;
     string shopLogin;
@@ -18,8 +17,7 @@ struct PaymentOrderItemRecord
     double price;
 };
 
-struct PaymentOrderRecord
-{
+struct PaymentOrderRecord {
     int id;
     string userLogin;
     vector<PaymentOrderItemRecord> items;
@@ -29,8 +27,7 @@ struct PaymentOrderRecord
     string paymentStatus;
 };
 
-struct PaymentRecord
-{
+struct PaymentRecord {
     int id;
     int orderId;
     string userLogin;
@@ -39,36 +36,31 @@ struct PaymentRecord
     string status;
 };
 
-vector<string> splitPaymentText(const string& text, char delimiter)
-{
+vector<string> splitPaymentText(const string& text, char delimiter) {
     vector<string> parts;
     string part;
     stringstream stream(text);
 
-    while (getline(stream, part, delimiter))
-    {
+    while (getline(stream, part, delimiter)) {
         parts.push_back(part);
     }
 
     return parts;
 }
 
-string cleanPaymentField(string value)
-{
+string cleanPaymentField(string value) {
     replace(value.begin(), value.end(), '|', '/');
     replace(value.begin(), value.end(), ';', ',');
     replace(value.begin(), value.end(), '#', '-');
     return value;
 }
 
-vector<PaymentOrderRecord> loadPaymentOrders()
-{
+vector<PaymentOrderRecord> loadPaymentOrders() {
     vector<PaymentOrderRecord> orders;
     ifstream file("orders.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitPaymentText(line, '|');
         if (parts.size() < 7) continue;
 
@@ -81,8 +73,7 @@ vector<PaymentOrderRecord> loadPaymentOrders()
         order.paymentStatus = parts[5];
 
         vector<string> itemParts = splitPaymentText(parts[6], ';');
-        for (const string& itemText : itemParts)
-        {
+        for (const string& itemText : itemParts) {
             if (itemText.empty()) continue;
             vector<string> fields = splitPaymentText(itemText, '#');
             if (fields.size() < 5) continue;
@@ -102,11 +93,9 @@ vector<PaymentOrderRecord> loadPaymentOrders()
     return orders;
 }
 
-void savePaymentOrders(const vector<PaymentOrderRecord>& orders)
-{
+void savePaymentOrders(const vector<PaymentOrderRecord>& orders) {
     ofstream file("orders.txt", ios::trunc);
-    for (const PaymentOrderRecord& order : orders)
-    {
+    for (const PaymentOrderRecord& order : orders) {
         file << order.id << '|'
              << cleanPaymentField(order.userLogin) << '|'
              << fixed << setprecision(2) << order.total << '|'
@@ -114,8 +103,7 @@ void savePaymentOrders(const vector<PaymentOrderRecord>& orders)
              << cleanPaymentField(order.address) << '|'
              << cleanPaymentField(order.paymentStatus) << '|';
 
-        for (const PaymentOrderItemRecord& item : order.items)
-        {
+        for (const PaymentOrderItemRecord& item : order.items) {
             file << item.productId << '#'
                  << cleanPaymentField(item.productName) << '#'
                  << cleanPaymentField(item.shopLogin) << '#'
@@ -127,26 +115,21 @@ void savePaymentOrders(const vector<PaymentOrderRecord>& orders)
     }
 }
 
-PaymentOrderRecord* findPaymentOrder(vector<PaymentOrderRecord>& orders, int orderId)
-{
-    for (PaymentOrderRecord& order : orders)
-    {
-        if (order.id == orderId)
-        {
+PaymentOrderRecord* findPaymentOrder(vector<PaymentOrderRecord>& orders, int orderId) {
+    for (PaymentOrderRecord& order : orders) {
+        if (order.id == orderId) {
             return &order;
         }
     }
     return nullptr;
 }
 
-vector<PaymentRecord> loadPaymentList()
-{
+vector<PaymentRecord> loadPaymentList() {
     vector<PaymentRecord> payments;
     ifstream file("payments.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitPaymentText(line, '|');
         if (parts.size() < 6) continue;
 
@@ -163,11 +146,9 @@ vector<PaymentRecord> loadPaymentList()
     return payments;
 }
 
-void savePaymentList(const vector<PaymentRecord>& payments)
-{
+void savePaymentList(const vector<PaymentRecord>& payments) {
     ofstream file("payments.txt", ios::trunc);
-    for (const PaymentRecord& payment : payments)
-    {
+    for (const PaymentRecord& payment : payments) {
         file << payment.id << '|'
              << payment.orderId << '|'
              << cleanPaymentField(payment.userLogin) << '|'
@@ -177,21 +158,17 @@ void savePaymentList(const vector<PaymentRecord>& payments)
     }
 }
 
-int getNextPaymentId(const vector<PaymentRecord>& payments)
-{
+int getNextPaymentId(const vector<PaymentRecord>& payments) {
     int nextId = 1;
-    for (const PaymentRecord& payment : payments)
-    {
-        if (payment.id >= nextId)
-        {
+    for (const PaymentRecord& payment : payments) {
+        if (payment.id >= nextId) {
             nextId = payment.id + 1;
         }
     }
     return nextId;
 }
 
-void PaymentManager::makePayment()
-{
+void PaymentManager::makePayment() {
     int orderId;
     string method;
 
@@ -203,20 +180,17 @@ void PaymentManager::makePayment()
     vector<PaymentOrderRecord> orders = loadPaymentOrders();
     PaymentOrderRecord* order = findPaymentOrder(orders, orderId);
 
-    if (order == nullptr)
-    {
+    if (order == nullptr) {
         cout << "Order not found.\n";
         return;
     }
 
-    if (order->status == "Cancelled")
-    {
+    if (order->status == "Cancelled") {
         cout << "Cancelled order cannot be paid.\n";
         return;
     }
 
-    if (order->paymentStatus == "Paid")
-    {
+    if (order->paymentStatus == "Paid") {
         cout << "Order is already paid.\n";
         return;
     }
@@ -232,8 +206,7 @@ void PaymentManager::makePayment()
     payments.push_back(payment);
 
     order->paymentStatus = "Paid";
-    if (order->status == "Created")
-    {
+    if (order->status == "Created") {
         order->status = "Paid";
     }
 
@@ -242,8 +215,7 @@ void PaymentManager::makePayment()
     cout << "Payment successful. Amount: " << payment.amount << '\n';
 }
 
-void PaymentManager::refundPayment()
-{
+void PaymentManager::refundPayment() {
     int orderId;
 
     cout << "\nOrder ID: ";
@@ -252,14 +224,12 @@ void PaymentManager::refundPayment()
     vector<PaymentOrderRecord> orders = loadPaymentOrders();
     PaymentOrderRecord* order = findPaymentOrder(orders, orderId);
 
-    if (order == nullptr)
-    {
+    if (order == nullptr) {
         cout << "Order not found.\n";
         return;
     }
 
-    if (order->paymentStatus != "Paid")
-    {
+    if (order->paymentStatus != "Paid") {
         cout << "Order is not paid.\n";
         return;
     }
@@ -282,8 +252,7 @@ void PaymentManager::refundPayment()
     cout << "Refund completed. Amount: " << order->total << '\n';
 }
 
-void PaymentManager::showPaymentHistory()
-{
+void PaymentManager::showPaymentHistory() {
     string userLogin;
 
     cout << "\nUser login: ";
@@ -293,8 +262,7 @@ void PaymentManager::showPaymentHistory()
     bool found = false;
 
     cout << "\n===== PAYMENT HISTORY =====\n";
-    for (const PaymentRecord& payment : payments)
-    {
+    for (const PaymentRecord& payment : payments) {
         if (payment.userLogin != userLogin) continue;
 
         cout << "Payment #" << payment.id

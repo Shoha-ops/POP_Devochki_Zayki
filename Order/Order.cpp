@@ -1,7 +1,6 @@
 #include "Order.h"
 
-Order::Order()
-{
+Order::Order() {
     id = 0;
     userId = 0;
     shopId = 0;

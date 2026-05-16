@@ -10,6 +10,15 @@
 #include "Payment/PaymentManager.h"
 #include "Shop/ShopManager.h"
 #include "User/UserManager.h"
+#include "Cart/Cart.cpp"
+#include "Cart/CartManager.cpp"
+#include "Favorites/FavoritesManager.cpp"
+#include "Order/Order.cpp"
+#include "Order/OrderManager.cpp"
+#include "Payment/PaymentManager.cpp"
+#include "Product/Product.cpp"
+#include "Product/ProductManager.cpp"
+#include "Shop/Shop.cpp"
 
 using namespace std;
 
@@ -22,12 +31,10 @@ FavoritesManager favoritesManager;
 OrderManager orderManager;
 PaymentManager paymentManager;
 
-void userMenu()
-{
+void userMenu() {
     int choice;
 
-    do
-    {
+    do {
         cout << "\n========== USER MENU ==========\n";
         cout << "1. Show Profile\n";
         cout << "2. Edit Profile\n";
@@ -51,8 +58,7 @@ void userMenu()
 
         choice = safeInput<int>();
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
             userManager.showProfile();
             break;
@@ -114,12 +120,10 @@ void userMenu()
     } while (choice != 18);
 }
 
-void shopMenu()
-{
+void shopMenu() {
     int choice;
 
-    do
-    {
+    do {
         cout << "\n========== SHOP MENU ==========\n";
         cout << "1. Add Product\n";
         cout << "2. Edit Product\n";
@@ -135,8 +139,7 @@ void shopMenu()
 
         choice = safeInput<int>();
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
             shopManager.addProduct();
             break;
@@ -173,12 +176,10 @@ void shopMenu()
     } while (choice != 10);
 }
 
-void adminMenu()
-{
+void adminMenu() {
     int choice;
 
-    do
-    {
+    do {
         cout << "\n========== ADMIN MENU ==========\n";
         cout << "1. Approve Shop\n";
         cout << "2. Reject Shop\n";
@@ -192,8 +193,7 @@ void adminMenu()
 
         choice = safeInput<int>();
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
             shopManager.approveShop();
             break;
@@ -225,12 +225,10 @@ void adminMenu()
     } while (choice != 8);
 }
 
-void headAdminMenu()
-{
+void headAdminMenu() {
     int choice;
 
-    do
-    {
+    do {
         cout << "\n========== HEAD ADMIN MENU ==========\n";
         cout << "1. Approve Shop\n";
         cout << "2. Reject Shop\n";
@@ -248,8 +246,7 @@ void headAdminMenu()
 
         choice = safeInput<int>();
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
             shopManager.approveShop();
             break;
@@ -294,8 +291,7 @@ void headAdminMenu()
     } while (choice != 12);
 }
 
-void loginFlow()
-{
+void loginFlow() {
     int type;
     string login;
     string password;
@@ -312,43 +308,34 @@ void loginFlow()
     cout << "Password: ";
     getline(cin >> ws, password);
 
-    if (type == 1)
-    {
-        if (userManager.loginUser(login, password))
-        {
+    if (type == 1) {
+        if (userManager.loginUser(login, password)) {
             cout << "\nLogin successful!\n";
             userMenu();
         }
-        else
-        {
+        else {
             cout << "\nWrong login or password!\n";
         }
     }
-    else if (type == 2)
-    {
+    else if (type == 2) {
         int result = shopManager.loginShop(login, password);
-        if (result == 1)
-        {
+        if (result == 1) {
             cout << "\nLogin successful!\n";
             shopMenu();
         }
-        else if (result == 2)
-        {
+        else if (result == 2) {
             cout << "\nYour shop is waiting for admin approval.\n";
         }
-        else
-        {
+        else {
             cout << "\nWrong login or password!\n";
         }
     }
-    else
-    {
+    else {
         cout << "\nInvalid account type!\n";
     }
 }
 
-void registerFlow()
-{
+void registerFlow() {
     int type;
 
     cout << "\nRegister as:\n";
@@ -357,8 +344,7 @@ void registerFlow()
     cout << "\nChoose: ";
     type = safeInput<int>();
 
-    switch (type)
-    {
+    switch (type) {
     case 1:
         userManager.registerUser();
         break;
@@ -370,8 +356,7 @@ void registerFlow()
     }
 }
 
-void adminLoginFlow()
-{
+void adminLoginFlow() {
     string login;
     string password;
 
@@ -381,26 +366,21 @@ void adminLoginFlow()
     cout << "Password: ";
     getline(cin >> ws, password);
 
-    if (adminManager.loginAdmin(login, password))
-    {
+    if (adminManager.loginAdmin(login, password)) {
         adminMenu();
     }
-    else if (headAdminManager.loginHeadAdmin(login, password))
-    {
+    else if (headAdminManager.loginHeadAdmin(login, password)) {
         headAdminMenu();
     }
-    else
-    {
+    else {
         cout << "\nWrong admin credentials!\n";
     }
 }
 
-int main()
-{
+int main() {
     int choice;
 
-    do
-    {
+    do {
         cout << "\n====================================\n";
         cout << "         MARKETPLACE SYSTEM\n";
         cout << "====================================\n";
@@ -412,8 +392,7 @@ int main()
 
         choice = safeInput<int>();
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
             loginFlow();
             break;

@@ -9,8 +9,7 @@
 
 using namespace std;
 
-struct ProductRecord
-{
+struct ProductRecord {
     int id;
     string name;
     string description;
@@ -22,34 +21,29 @@ struct ProductRecord
     double rating;
 };
 
-vector<string> splitProductLine(const string& line)
-{
+vector<string> splitProductLine(const string& line) {
     vector<string> parts;
     string part;
     stringstream stream(line);
 
-    while (getline(stream, part, '|'))
-    {
+    while (getline(stream, part, '|')) {
         parts.push_back(part);
     }
 
     return parts;
 }
 
-string cleanProductField(string value)
-{
+string cleanProductField(string value) {
     replace(value.begin(), value.end(), '|', '/');
     return value;
 }
 
-vector<ProductRecord> loadProducts()
-{
+vector<ProductRecord> loadProducts() {
     vector<ProductRecord> products;
     ifstream file("products.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitProductLine(line);
         if (parts.size() < 9) continue;
 
@@ -69,11 +63,9 @@ vector<ProductRecord> loadProducts()
     return products;
 }
 
-void saveProducts(const vector<ProductRecord>& products)
-{
+void saveProducts(const vector<ProductRecord>& products) {
     ofstream file("products.txt", ios::trunc);
-    for (const ProductRecord& product : products)
-    {
+    for (const ProductRecord& product : products) {
         file << product.id << '|'
              << cleanProductField(product.name) << '|'
              << cleanProductField(product.description) << '|'
@@ -86,33 +78,26 @@ void saveProducts(const vector<ProductRecord>& products)
     }
 }
 
-int getNextProductId(const vector<ProductRecord>& products)
-{
+int getNextProductId(const vector<ProductRecord>& products) {
     int nextId = 1;
-    for (const ProductRecord& product : products)
-    {
-        if (product.id >= nextId)
-        {
+    for (const ProductRecord& product : products) {
+        if (product.id >= nextId) {
             nextId = product.id + 1;
         }
     }
     return nextId;
 }
 
-ProductRecord* findProductById(vector<ProductRecord>& products, int id)
-{
-    for (ProductRecord& product : products)
-    {
-        if (product.id == id)
-        {
+ProductRecord* findProductById(vector<ProductRecord>& products, int id) {
+    for (ProductRecord& product : products) {
+        if (product.id == id) {
             return &product;
         }
     }
     return nullptr;
 }
 
-void printProductRecord(const ProductRecord& product)
-{
+void printProductRecord(const ProductRecord& product) {
     cout << "ID: " << product.id << '\n';
     cout << "Name: " << product.name << '\n';
     cout << "Description: " << product.description << '\n';
@@ -123,8 +108,7 @@ void printProductRecord(const ProductRecord& product)
     cout << "Rating: " << fixed << setprecision(1) << product.rating << "\n\n";
 }
 
-void ProductManager::createProduct()
-{
+void ProductManager::createProduct() {
     vector<ProductRecord> products = loadProducts();
     ProductRecord product;
     product.id = getNextProductId(products);
@@ -146,8 +130,7 @@ void ProductManager::createProduct()
     cout << "Category: ";
     getline(cin >> ws, product.category);
 
-    if (product.price <= 0 || product.stock < 0)
-    {
+    if (product.price <= 0 || product.stock < 0) {
         cout << "Invalid product data.\n";
         return;
     }
@@ -157,8 +140,7 @@ void ProductManager::createProduct()
     cout << "Product created. ID: " << product.id << '\n';
 }
 
-void ProductManager::editProduct()
-{
+void ProductManager::editProduct() {
     vector<ProductRecord> products = loadProducts();
     int id;
 
@@ -166,8 +148,7 @@ void ProductManager::editProduct()
     cin >> id;
 
     ProductRecord* product = findProductById(products, id);
-    if (product == nullptr)
-    {
+    if (product == nullptr) {
         cout << "Product not found.\n";
         return;
     }
@@ -187,18 +168,15 @@ void ProductManager::editProduct()
     cout << "Product updated.\n";
 }
 
-void ProductManager::deleteProduct()
-{
+void ProductManager::deleteProduct() {
     vector<ProductRecord> products = loadProducts();
     int id;
 
     cout << "\nEnter product ID: ";
     cin >> id;
 
-    for (auto it = products.begin(); it != products.end(); ++it)
-    {
-        if (it->id == id)
-        {
+    for (auto it = products.begin(); it != products.end(); ++it) {
+        if (it->id == id) {
             products.erase(it);
             saveProducts(products);
             cout << "Product deleted.\n";
@@ -209,8 +187,7 @@ void ProductManager::deleteProduct()
     cout << "Product not found.\n";
 }
 
-void ProductManager::searchProducts()
-{
+void ProductManager::searchProducts() {
     string query;
 
     cout << "\nSearch: ";
@@ -219,12 +196,10 @@ void ProductManager::searchProducts()
     vector<ProductRecord> products = loadProducts();
     bool found = false;
 
-    for (const ProductRecord& product : products)
-    {
+    for (const ProductRecord& product : products) {
         if (product.name.find(query) != string::npos ||
             product.description.find(query) != string::npos ||
-            product.category.find(query) != string::npos)
-        {
+            product.category.find(query) != string::npos) {
             printProductRecord(product);
             found = true;
         }
@@ -233,8 +208,7 @@ void ProductManager::searchProducts()
     if (!found) cout << "No products found.\n";
 }
 
-void ProductManager::filterProducts()
-{
+void ProductManager::filterProducts() {
     string category;
 
     cout << "\nCategory: ";
@@ -243,10 +217,8 @@ void ProductManager::filterProducts()
     vector<ProductRecord> products = loadProducts();
     bool found = false;
 
-    for (const ProductRecord& product : products)
-    {
-        if (product.category == category)
-        {
+    for (const ProductRecord& product : products) {
+        if (product.category == category) {
             printProductRecord(product);
             found = true;
         }
@@ -255,33 +227,28 @@ void ProductManager::filterProducts()
     if (!found) cout << "No products in this category.\n";
 }
 
-void ProductManager::sortProducts()
-{
+void ProductManager::sortProducts() {
     vector<ProductRecord> products = loadProducts();
     sort(products.begin(), products.end(), [](const ProductRecord& left, const ProductRecord& right) {
         return left.price < right.price;
     });
 
     cout << "\n===== PRODUCTS BY PRICE =====\n";
-    for (const ProductRecord& product : products)
-    {
+    for (const ProductRecord& product : products) {
         printProductRecord(product);
     }
 }
 
-void ProductManager::showCatalog()
-{
+void ProductManager::showCatalog() {
     vector<ProductRecord> products = loadProducts();
 
     cout << "\n===== PRODUCT CATALOG =====\n";
-    if (products.empty())
-    {
+    if (products.empty()) {
         cout << "Catalog is empty.\n";
         return;
     }
 
-    for (const ProductRecord& product : products)
-    {
+    for (const ProductRecord& product : products) {
         printProductRecord(product);
     }
 }

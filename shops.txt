@@ -1,2 +1,0 @@
-1|TestShop|TestOwner|testlogin|testpass|test@email.com|1
-2|sa|sa|da|123|123|0

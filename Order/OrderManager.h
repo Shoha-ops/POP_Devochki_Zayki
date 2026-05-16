@@ -2,8 +2,7 @@
 
 #include "Order.h"
 
-class OrderManager
-{
+class OrderManager {
 public:
     void createOrder();
 

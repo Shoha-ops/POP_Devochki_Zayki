@@ -5,8 +5,7 @@
 
 using namespace std;
 
-class Order
-{
+class Order {
 public:
     int id;
 

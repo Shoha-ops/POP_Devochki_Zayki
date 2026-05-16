@@ -1,7 +1,6 @@
 #include "Product.h"
 
-Product::Product()
-{
+Product::Product() {
     id = 0;
     price = 0.0;
     stock = 0;

@@ -1,7 +1,6 @@
 #include "Shop.h"
 
-Shop::Shop()
-{
+Shop::Shop() {
     id = 0;
 
     shopName = "";
@@ -14,22 +13,18 @@ Shop::Shop()
     approved = false;
 }
 
-string Shop::getLogin()
-{
+string Shop::getLogin() {
     return login;
 }
 
-string Shop::getPassword()
-{
+string Shop::getPassword() {
     return password;
 }
 
-bool Shop::isApproved()
-{
+bool Shop::isApproved() {
     return approved;
 }
 
-void Shop::approve()
-{
+void Shop::approve() {
     approved = true;
 }

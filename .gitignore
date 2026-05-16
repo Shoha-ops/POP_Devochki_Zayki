@@ -50,10 +50,10 @@ cmake_install.cmake
 *.o.d
 
 # User data
-users.txt
-orders.txt
+*.txt
 *.dat
 
 # Temporary files
 *.tmp
 temp/
+

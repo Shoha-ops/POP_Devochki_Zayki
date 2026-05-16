@@ -8,43 +8,37 @@
 
 using namespace std;
 
-struct CartProductRecord
-{
+struct CartProductRecord {
     int id;
     string name;
     double price;
     int stock;
 };
 
-struct CartItemRecord
-{
+struct CartItemRecord {
     string userLogin;
     int productId;
     int quantity;
 };
 
-vector<string> splitCartLine(const string& line)
-{
+vector<string> splitCartLine(const string& line) {
     vector<string> parts;
     string part;
     stringstream stream(line);
 
-    while (getline(stream, part, '|'))
-    {
+    while (getline(stream, part, '|')) {
         parts.push_back(part);
     }
 
     return parts;
 }
 
-vector<CartProductRecord> loadCartProducts()
-{
+vector<CartProductRecord> loadCartProducts() {
     vector<CartProductRecord> products;
     ifstream file("products.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitCartLine(line);
         if (parts.size() < 9) continue;
 
@@ -59,38 +53,30 @@ vector<CartProductRecord> loadCartProducts()
     return products;
 }
 
-CartProductRecord* findCartProduct(vector<CartProductRecord>& products, int productId)
-{
-    for (CartProductRecord& product : products)
-    {
-        if (product.id == productId)
-        {
+CartProductRecord* findCartProduct(vector<CartProductRecord>& products, int productId) {
+    for (CartProductRecord& product : products) {
+        if (product.id == productId) {
             return &product;
         }
     }
     return nullptr;
 }
 
-const CartProductRecord* findCartProduct(const vector<CartProductRecord>& products, int productId)
-{
-    for (const CartProductRecord& product : products)
-    {
-        if (product.id == productId)
-        {
+const CartProductRecord* findCartProduct(const vector<CartProductRecord>& products, int productId) {
+    for (const CartProductRecord& product : products) {
+        if (product.id == productId) {
             return &product;
         }
     }
     return nullptr;
 }
 
-vector<CartItemRecord> loadCart()
-{
+vector<CartItemRecord> loadCart() {
     vector<CartItemRecord> cart;
     ifstream file("cart.txt");
     string line;
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         vector<string> parts = splitCartLine(line);
         if (parts.size() < 3) continue;
 
@@ -104,25 +90,21 @@ vector<CartItemRecord> loadCart()
     return cart;
 }
 
-void saveCart(const vector<CartItemRecord>& cart)
-{
+void saveCart(const vector<CartItemRecord>& cart) {
     ofstream file("cart.txt", ios::trunc);
-    for (const CartItemRecord& item : cart)
-    {
+    for (const CartItemRecord& item : cart) {
         file << item.userLogin << '|' << item.productId << '|' << item.quantity << '\n';
     }
 }
 
-static string askCartUser()
-{
+static string askCartUser() {
     string userLogin;
     cout << "User login: ";
     getline(cin >> ws, userLogin);
     return userLogin;
 }
 
-void CartManager::addToCart()
-{
+void CartManager::addToCart() {
     string userLogin = askCartUser();
     int productId;
     int quantity;
@@ -135,25 +117,20 @@ void CartManager::addToCart()
     vector<CartProductRecord> products = loadCartProducts();
     CartProductRecord* product = findCartProduct(products, productId);
 
-    if (product == nullptr || product->stock <= 0)
-    {
+    if (product == nullptr || product->stock <= 0) {
         cout << "Product is not available.\n";
         return;
     }
 
-    if (quantity <= 0 || quantity > product->stock)
-    {
+    if (quantity <= 0 || quantity > product->stock) {
         cout << "Invalid quantity. Available: " << product->stock << '\n';
         return;
     }
 
     vector<CartItemRecord> cart = loadCart();
-    for (CartItemRecord& item : cart)
-    {
-        if (item.userLogin == userLogin && item.productId == productId)
-        {
-            if (item.quantity + quantity > product->stock)
-            {
+    for (CartItemRecord& item : cart) {
+        if (item.userLogin == userLogin && item.productId == productId) {
+            if (item.quantity + quantity > product->stock) {
                 cout << "Not enough stock.\n";
                 return;
             }
@@ -175,8 +152,7 @@ void CartManager::addToCart()
     cout << "Added to cart.\n";
 }
 
-void CartManager::removeFromCart()
-{
+void CartManager::removeFromCart() {
     string userLogin = askCartUser();
     int productId;
 
@@ -184,10 +160,8 @@ void CartManager::removeFromCart()
     cin >> productId;
 
     vector<CartItemRecord> cart = loadCart();
-    for (auto it = cart.begin(); it != cart.end(); ++it)
-    {
-        if (it->userLogin == userLogin && it->productId == productId)
-        {
+    for (auto it = cart.begin(); it != cart.end(); ++it) {
+        if (it->userLogin == userLogin && it->productId == productId) {
             cart.erase(it);
             saveCart(cart);
             cout << "Removed from cart.\n";
@@ -198,8 +172,7 @@ void CartManager::removeFromCart()
     cout << "Product not found in cart.\n";
 }
 
-void CartManager::clearCart()
-{
+void CartManager::clearCart() {
     string userLogin = askCartUser();
     vector<CartItemRecord> cart = loadCart();
 
@@ -211,8 +184,7 @@ void CartManager::clearCart()
     cout << "Cart cleared.\n";
 }
 
-void CartManager::showCart()
-{
+void CartManager::showCart() {
     string userLogin = askCartUser();
     vector<CartItemRecord> cart = loadCart();
     vector<CartProductRecord> products = loadCartProducts();
@@ -220,8 +192,7 @@ void CartManager::showCart()
     bool found = false;
 
     cout << "\n===== CART =====\n";
-    for (const CartItemRecord& item : cart)
-    {
+    for (const CartItemRecord& item : cart) {
         if (item.userLogin != userLogin) continue;
 
         const CartProductRecord* product = findCartProduct(products, item.productId);
@@ -234,8 +205,7 @@ void CartManager::showCart()
         found = true;
     }
 
-    if (!found)
-    {
+    if (!found) {
         cout << "Cart is empty.\n";
         return;
     }
@@ -243,7 +213,6 @@ void CartManager::showCart()
     cout << "Total: " << total << '\n';
 }
 
-void CartManager::calculateTotal()
-{
+void CartManager::calculateTotal() {
     showCart();
 }

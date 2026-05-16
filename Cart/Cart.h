@@ -4,8 +4,7 @@
 
 using namespace std;
 
-class Cart
-{
+class Cart {
 public:
     vector<int> products;
 
