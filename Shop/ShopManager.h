@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "../Core/check.h"
 #include "Shop.h"
 
 using namespace std;
@@ -396,16 +397,13 @@ public:
         cout << "Description: ";
         getline(cin >> ws, product.description);
         cout << "Price: ";
-        cin >> product.price;
+        cin.clear();
+        product.price = safeInput<double>(0.01);
         cout << "Stock: ";
-        cin >> product.stock;
+        cin.clear();
+        product.stock = safeInput<int>(0);
         cout << "Category: ";
         getline(cin >> ws, product.category);
-
-        if (product.price <= 0 || product.stock < 0) {
-            cout << "Invalid price or stock.\n";
-            return;
-        }
 
         products.push_back(product);
         saveProducts(products);
@@ -417,7 +415,8 @@ public:
         int id;
 
         cout << "\nEnter product ID: ";
-        cin >> id;
+        cin.clear();
+        id = safeInput<int>(1);
 
         ShopProductRecord* product = findProduct(products, id);
         if (product == nullptr || product->shopLogin != currentShopLogin) {
@@ -430,7 +429,8 @@ public:
         cout << "New description: ";
         getline(cin >> ws, product->description);
         cout << "New price: ";
-        cin >> product->price;
+        cin.clear();
+        product->price = safeInput<double>(0.01);
         cout << "New category: ";
         getline(cin >> ws, product->category);
 
@@ -443,7 +443,8 @@ public:
         int id;
 
         cout << "\nEnter product ID: ";
-        cin >> id;
+        cin.clear();
+        id = safeInput<int>(1);
 
         for (auto it = products.begin(); it != products.end(); ++it) {
             if (it->id == id && it->shopLogin == currentShopLogin) {
@@ -541,18 +542,15 @@ public:
         int stock;
 
         cout << "\nEnter product ID: ";
-        cin >> id;
+        cin.clear();
+        id = safeInput<int>(1);
         cout << "New stock: ";
-        cin >> stock;
+        cin.clear();
+        stock = safeInput<int>(0);
 
         ShopProductRecord* product = findProduct(products, id);
         if (product == nullptr || product->shopLogin != currentShopLogin) {
             cout << "Product not found in your shop.\n";
-            return;
-        }
-
-        if (stock < 0) {
-            cout << "Stock cannot be negative.\n";
             return;
         }
 
@@ -605,7 +603,8 @@ public:
         int id;
 
         cout << "\nEnter order ID: ";
-        cin >> id;
+        cin.clear();
+        id = safeInput<int>(1);
 
         for (ShopOrderRecord& order : orders) {
             bool hasShopItem = false;

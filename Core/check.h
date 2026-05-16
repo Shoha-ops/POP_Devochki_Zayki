@@ -5,17 +5,20 @@
 #include <limits>
 
 template<typename T>
-T safeInput() {
+T safeInput(T minValue = std::numeric_limits<T>::lowest(), T maxValue = std::numeric_limits<T>::max()) {
     T value;
     while (true) {
         std::cin >> value;
         if (std::cin.fail()) {
-            std::cin.clear(); // Clear the error flag
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Please enter a valid value: ";
+        } else if (value < minValue || value > maxValue) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Error: Value must be between " << minValue << " and " << maxValue << ". Try again: ";
         } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard any extra input
-            return value; // Return the valid input
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return value;
         }
     }
 }

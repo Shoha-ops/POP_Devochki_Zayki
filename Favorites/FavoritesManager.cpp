@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Core/check.h"
+
 using namespace std;
 
 struct FavoriteProductRecord {
@@ -108,7 +110,8 @@ void FavoritesManager::addFavorite() {
     int productId;
 
     cout << "Product ID: ";
-    cin >> productId;
+    cin.clear();
+    productId = safeInput<int>(1);
 
     vector<FavoriteProductRecord> products = loadFavoriteProducts();
     if (findFavoriteProduct(products, productId) == nullptr) {
@@ -134,7 +137,8 @@ void FavoritesManager::removeFavorite() {
     int productId;
 
     cout << "Product ID: ";
-    cin >> productId;
+    cin.clear();
+    productId = safeInput<int>(1);
 
     vector<pair<string, int>> favorites = loadFavoriteList();
     for (auto it = favorites.begin(); it != favorites.end(); ++it) {

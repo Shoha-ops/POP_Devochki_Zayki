@@ -7,6 +7,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Core/check.h"
+
 using namespace std;
 
 struct OrderProductRecord {
@@ -292,7 +294,8 @@ void OrderManager::cancelOrder() {
     int orderId;
 
     cout << "Order ID: ";
-    cin >> orderId;
+    cin.clear();
+    orderId = safeInput<int>(1);
 
     vector<OrderRecord> orders = loadOrders();
     vector<OrderProductRecord> products = loadOrderProducts();
@@ -325,7 +328,8 @@ void OrderManager::trackOrder() {
     int orderId;
 
     cout << "\nOrder ID: ";
-    cin >> orderId;
+    cin.clear();
+    orderId = safeInput<int>(1);
 
     vector<OrderRecord> orders = loadOrders();
     OrderRecord* order = findOrder(orders, orderId);
@@ -347,7 +351,7 @@ void OrderManager::updateOrderStatus() {
     string status;
 
     cout << "\nOrder ID: ";
-    cin >> orderId;
+    orderId = safeInput<int>(1);
     cout << "New status: ";
     getline(cin >> ws, status);
 

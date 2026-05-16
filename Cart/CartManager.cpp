@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Core/check.h"
+
 using namespace std;
 
 struct CartProductRecord {
@@ -110,9 +112,11 @@ void CartManager::addToCart() {
     int quantity;
 
     cout << "Product ID: ";
-    cin >> productId;
+    cin.clear();
+    productId = safeInput<int>(1);
     cout << "Quantity: ";
-    cin >> quantity;
+    cin.clear();
+    quantity = safeInput<int>(1);
 
     vector<CartProductRecord> products = loadCartProducts();
     CartProductRecord* product = findCartProduct(products, productId);
@@ -122,7 +126,7 @@ void CartManager::addToCart() {
         return;
     }
 
-    if (quantity <= 0 || quantity > product->stock) {
+    if (quantity > product->stock) {
         cout << "Invalid quantity. Available: " << product->stock << '\n';
         return;
     }
@@ -157,7 +161,8 @@ void CartManager::removeFromCart() {
     int productId;
 
     cout << "Product ID: ";
-    cin >> productId;
+    cin.clear();
+    productId = safeInput<int>(1);
 
     vector<CartItemRecord> cart = loadCart();
     for (auto it = cart.begin(); it != cart.end(); ++it) {

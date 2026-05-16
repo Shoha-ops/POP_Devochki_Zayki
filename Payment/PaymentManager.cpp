@@ -7,6 +7,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Core/check.h"
+
 using namespace std;
 
 struct PaymentOrderItemRecord {
@@ -173,7 +175,8 @@ void PaymentManager::makePayment() {
     string method;
 
     cout << "\nOrder ID: ";
-    cin >> orderId;
+    cin.clear();
+    orderId = safeInput<int>(1);
     cout << "Payment method: ";
     getline(cin >> ws, method);
 
@@ -219,7 +222,7 @@ void PaymentManager::refundPayment() {
     int orderId;
 
     cout << "\nOrder ID: ";
-    cin >> orderId;
+    orderId = safeInput<int>(1);
 
     vector<PaymentOrderRecord> orders = loadPaymentOrders();
     PaymentOrderRecord* order = findPaymentOrder(orders, orderId);

@@ -7,6 +7,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Core/check.h"
+
 using namespace std;
 
 struct ProductRecord {
@@ -124,16 +126,13 @@ void ProductManager::createProduct() {
     cout << "Description: ";
     getline(cin >> ws, product.description);
     cout << "Price: ";
-    cin >> product.price;
+    cin.clear();
+    product.price = safeInput<double>(0.01);
     cout << "Stock: ";
-    cin >> product.stock;
+    cin.clear();
+    product.stock = safeInput<int>(0);
     cout << "Category: ";
     getline(cin >> ws, product.category);
-
-    if (product.price <= 0 || product.stock < 0) {
-        cout << "Invalid product data.\n";
-        return;
-    }
 
     products.push_back(product);
     saveProducts(products);
@@ -145,7 +144,7 @@ void ProductManager::editProduct() {
     int id;
 
     cout << "\nEnter product ID: ";
-    cin >> id;
+    id = safeInput<int>();
 
     ProductRecord* product = findProductById(products, id);
     if (product == nullptr) {
@@ -158,9 +157,11 @@ void ProductManager::editProduct() {
     cout << "New description: ";
     getline(cin >> ws, product->description);
     cout << "New price: ";
-    cin >> product->price;
+    cin.clear();
+    product->price = safeInput<double>(0.01);
     cout << "New stock: ";
-    cin >> product->stock;
+    cin.clear();
+    product->stock = safeInput<int>(0);
     cout << "New category: ";
     getline(cin >> ws, product->category);
 
@@ -173,7 +174,7 @@ void ProductManager::deleteProduct() {
     int id;
 
     cout << "\nEnter product ID: ";
-    cin >> id;
+    id = safeInput<int>();
 
     for (auto it = products.begin(); it != products.end(); ++it) {
         if (it->id == id) {
