@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 using namespace std;
@@ -8,4 +10,6 @@ public:
     vector<int> products;
 
     double totalPrice;
+
+    Cart();
 };

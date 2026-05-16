@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <string>
 
@@ -17,4 +19,6 @@ public:
     double totalPrice;
 
     string status;
+
+    Order();
 };

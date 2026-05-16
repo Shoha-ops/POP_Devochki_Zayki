@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -8,7 +10,7 @@ class Shop
 {
 public:
     // Public fields are kept simple for the template stage.
-    int id;
+    int id;    
 
     string shopName;
     string ownerName;
@@ -23,4 +25,11 @@ public:
     // Product and order identifiers are stored as lightweight references.
     vector<int> products;
     vector<int> orders;
+    
+    Shop();
+
+    string getLogin();
+    string getPassword();
+    bool isApproved();
+    void approve();
 };

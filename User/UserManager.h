@@ -13,7 +13,7 @@ using namespace std;
 // Persistent user record stored in a flat text file.
 struct StoredUser
 {
-    int id;
+    long long id;
     string name;
     string login;
     string password;
@@ -27,7 +27,7 @@ class UserManager
 private:
     vector<StoredUser> users;
     string storagePath;
-    int nextUserId;
+    long long nextUserId;
     bool loggedIn;
     string currentLogin;
 
@@ -85,7 +85,7 @@ private:
             if (!getline(ss, user.password, '|')) continue;
             if (!getline(ss, user.email, '|')) continue;
 
-            user.id = stoi(idText);
+            user.id = stoll(idText);
             users.push_back(user);
 
             if (user.id >= nextUserId)
@@ -106,7 +106,7 @@ private:
 
 public:
     explicit UserManager(const string& filePath = "users.txt")
-        : storagePath(filePath), nextUserId(1), loggedIn(false)
+        : storagePath(filePath), nextUserId(7000000000LL), loggedIn(false)
     {
         loadUsers();
     }

@@ -1,3 +1,6 @@
+#ifndef CORE_CHECK_H
+#define CORE_CHECK_H
+
 #include <iostream>
 #include <limits>
 
@@ -16,3 +19,5 @@ T safeInput() {
         }
     }
 }
+
+#endif // CORE_CHECK_H

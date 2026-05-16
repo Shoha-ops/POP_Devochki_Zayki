@@ -1,3 +1,5 @@
+#pragma once
+
 class FavoritesManager
 {
 public:

@@ -2,6 +2,15 @@
 
 Shop::Shop()
 {
+    id = 0;
+
+    shopName = "";
+    ownerName = "";
+
+    login = "";
+    password = "";
+    email = "";
+
     approved = false;
 }
 

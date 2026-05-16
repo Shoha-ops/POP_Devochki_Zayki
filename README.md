@@ -103,10 +103,10 @@ POP_Devochki_Zayki/
 
 ## File Descriptions
 
-| File | Purpose |
-|------|---------|
-| `main.cpp` | Entry point with user interface menu |
-| `check.h` | Template for safe input validation |
+| File             | Purpose |
+|------------------|---------|
+| `main.cpp`       | Entry point with user interface menu |
+| `check.h`        | Template for safe input validation |
 | `Core Classes.h` | Base domain model definitions |
 | `Data Storage.h` | Persistence layer functions |
 | `CMakeLists.txt` | Build configuration for CMake |

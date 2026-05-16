@@ -8,7 +8,7 @@ public:
     bool loginUser(string login, string password);
 
     void logoutUser();
-
+    
     void showProfile();
 
     void editProfile();

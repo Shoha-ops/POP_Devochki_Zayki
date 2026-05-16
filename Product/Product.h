@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 using namespace std;
@@ -19,4 +21,6 @@ public:
     int shopId;
 
     double rating;
+
+    Product();
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Cart.h"
 
 class CartManager
