@@ -229,6 +229,10 @@ string askOrderUser() {
 
 void OrderManager::createOrder() {
     string userLogin = askOrderUser();
+    createOrder(userLogin);
+}
+
+void OrderManager::createOrder(string userLogin) {
     string address;
 
     cout << "Delivery address: ";
@@ -291,6 +295,10 @@ void OrderManager::createOrder() {
 
 void OrderManager::cancelOrder() {
     string userLogin = askOrderUser();
+    cancelOrder(userLogin);
+}
+
+void OrderManager::cancelOrder(string userLogin) {
     int orderId;
 
     cout << "Order ID: ";
@@ -325,6 +333,11 @@ void OrderManager::cancelOrder() {
 }
 
 void OrderManager::trackOrder() {
+    string userLogin = askOrderUser();
+    trackOrder(userLogin);
+}
+
+void OrderManager::trackOrder(string userLogin) {
     int orderId;
 
     cout << "\nOrder ID: ";
@@ -334,7 +347,7 @@ void OrderManager::trackOrder() {
     vector<OrderRecord> orders = loadOrders();
     OrderRecord* order = findOrder(orders, orderId);
 
-    if (order == nullptr) {
+    if (order == nullptr || order->userLogin != userLogin) {
         cout << "Order not found.\n";
         return;
     }
@@ -370,6 +383,10 @@ void OrderManager::updateOrderStatus() {
 
 void OrderManager::showUserOrders() {
     string userLogin = askOrderUser();
+    showUserOrders(userLogin);
+}
+
+void OrderManager::showUserOrders(string userLogin) {
     vector<OrderRecord> orders = loadOrders();
     bool found = false;
 

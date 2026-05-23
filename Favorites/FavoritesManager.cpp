@@ -107,6 +107,10 @@ static string askFavoriteUser() {
 
 void FavoritesManager::addFavorite() {
     string userLogin = askFavoriteUser();
+    addFavorite(userLogin);
+}
+
+void FavoritesManager::addFavorite(string userLogin) {
     int productId;
 
     cout << "Product ID: ";
@@ -134,6 +138,10 @@ void FavoritesManager::addFavorite() {
 
 void FavoritesManager::removeFavorite() {
     string userLogin = askFavoriteUser();
+    removeFavorite(userLogin);
+}
+
+void FavoritesManager::removeFavorite(string userLogin) {
     int productId;
 
     cout << "Product ID: ";
@@ -155,6 +163,10 @@ void FavoritesManager::removeFavorite() {
 
 void FavoritesManager::showFavorites() {
     string userLogin = askFavoriteUser();
+    showFavorites(userLogin);
+}
+
+void FavoritesManager::showFavorites(string userLogin) {
     vector<pair<string, int>> favorites = loadFavoriteList();
     vector<FavoriteProductRecord> products = loadFavoriteProducts();
     bool found = false;

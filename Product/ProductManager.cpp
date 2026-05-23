@@ -191,16 +191,14 @@ void ProductManager::deleteProduct() {
 void ProductManager::searchProducts() {
     string query;
 
-    cout << "\nSearch: ";
+    cout << "\nProduct name: ";
     getline(cin >> ws, query);
 
     vector<ProductRecord> products = loadProducts();
     bool found = false;
 
     for (const ProductRecord& product : products) {
-        if (product.name.find(query) != string::npos ||
-            product.description.find(query) != string::npos ||
-            product.category.find(query) != string::npos) {
+        if (product.name.find(query) != string::npos) {
             printProductRecord(product);
             found = true;
         }
@@ -241,7 +239,12 @@ void ProductManager::sortProducts() {
 }
 
 void ProductManager::showCatalog() {
+    string shopName;
     vector<ProductRecord> products = loadProducts();
+    bool found = false;
+
+    cout << "\nShop name: ";
+    getline(cin >> ws, shopName);
 
     cout << "\n===== PRODUCT CATALOG =====\n";
     if (products.empty()) {
@@ -250,6 +253,11 @@ void ProductManager::showCatalog() {
     }
 
     for (const ProductRecord& product : products) {
-        printProductRecord(product);
+        if (product.shopName == shopName) {
+            printProductRecord(product);
+            found = true;
+        }
     }
+
+    if (!found) cout << "No products found for this shop.\n";
 }

@@ -108,6 +108,10 @@ static string askCartUser() {
 
 void CartManager::addToCart() {
     string userLogin = askCartUser();
+    addToCart(userLogin);
+}
+
+void CartManager::addToCart(string userLogin) {
     int productId;
     int quantity;
 
@@ -158,6 +162,10 @@ void CartManager::addToCart() {
 
 void CartManager::removeFromCart() {
     string userLogin = askCartUser();
+    removeFromCart(userLogin);
+}
+
+void CartManager::removeFromCart(string userLogin) {
     int productId;
 
     cout << "Product ID: ";
@@ -179,6 +187,10 @@ void CartManager::removeFromCart() {
 
 void CartManager::clearCart() {
     string userLogin = askCartUser();
+    clearCart(userLogin);
+}
+
+void CartManager::clearCart(string userLogin) {
     vector<CartItemRecord> cart = loadCart();
 
     cart.erase(remove_if(cart.begin(), cart.end(), [&](const CartItemRecord& item) {
@@ -191,6 +203,10 @@ void CartManager::clearCart() {
 
 void CartManager::showCart() {
     string userLogin = askCartUser();
+    showCart(userLogin);
+}
+
+void CartManager::showCart(string userLogin) {
     vector<CartItemRecord> cart = loadCart();
     vector<CartProductRecord> products = loadCartProducts();
     double total = 0.0;

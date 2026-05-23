@@ -126,6 +126,27 @@ PaymentOrderRecord* findPaymentOrder(vector<PaymentOrderRecord>& orders, int ord
     return nullptr;
 }
 
+bool showPaymentUserOrders(const vector<PaymentOrderRecord>& orders, string userLogin) {
+    bool found = false;
+
+    cout << "\n===== YOUR ORDERS =====\n";
+    for (const PaymentOrderRecord& order : orders) {
+        if (order.userLogin != userLogin) continue;
+
+        cout << "Order #" << order.id
+             << " | " << order.status
+             << " | " << order.paymentStatus
+             << " | Total: " << order.total << '\n';
+        found = true;
+    }
+
+    if (!found) {
+        cout << "No orders for this user.\n";
+    }
+
+    return found;
+}
+
 vector<PaymentRecord> loadPaymentList() {
     vector<PaymentRecord> payments;
     ifstream file("payments.txt");
@@ -171,8 +192,21 @@ int getNextPaymentId(const vector<PaymentRecord>& payments) {
 }
 
 void PaymentManager::makePayment() {
+    string userLogin;
+
+    cout << "\nUser login: ";
+    getline(cin >> ws, userLogin);
+    makePayment(userLogin);
+}
+
+void PaymentManager::makePayment(string userLogin) {
     int orderId;
     string method;
+    vector<PaymentOrderRecord> orders = loadPaymentOrders();
+
+    if (!showPaymentUserOrders(orders, userLogin)) {
+        return;
+    }
 
     cout << "\nOrder ID: ";
     cin.clear();
@@ -180,11 +214,10 @@ void PaymentManager::makePayment() {
     cout << "Payment method: ";
     getline(cin >> ws, method);
 
-    vector<PaymentOrderRecord> orders = loadPaymentOrders();
     PaymentOrderRecord* order = findPaymentOrder(orders, orderId);
 
-    if (order == nullptr) {
-        cout << "Order not found.\n";
+    if (order == nullptr || order->userLogin != userLogin) {
+        cout << "Order with this ID was not found.\n";
         return;
     }
 
@@ -260,7 +293,10 @@ void PaymentManager::showPaymentHistory() {
 
     cout << "\nUser login: ";
     getline(cin >> ws, userLogin);
+    showPaymentHistory(userLogin);
+}
 
+void PaymentManager::showPaymentHistory(string userLogin) {
     vector<PaymentRecord> payments = loadPaymentList();
     bool found = false;
 

@@ -474,31 +474,51 @@ public:
     }
 
     void showCatalog() {
+        vector<Shop> availableShops;
+        int choice;
+
+        cout << "\n===== SHOPS =====\n";
+        for (const Shop& shop : shops) {
+            if (shop.approved) {
+                availableShops.push_back(shop);
+                cout << availableShops.size() << ". " << shop.shopName << '\n';
+            }
+        }
+
+        if (availableShops.empty()) {
+            cout << "No approved shops.\n";
+            return;
+        }
+
+        cout << "\nChoose shop: ";
+        cin.clear();
+        choice = safeInput<int>(1, availableShops.size());
+
+        string shopName = availableShops[choice - 1].shopName;
+
         cout << "\n===== PRODUCT CATALOG =====\n";
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
 
         for (const ShopProductRecord& product : products) {
-            if (product.stock > 0) {
+            if (product.shopName == shopName && product.stock > 0) {
                 printProduct(product);
                 found = true;
             }
         }
 
-        if (!found) cout << "Catalog is empty.\n";
+        if (!found) cout << "No products found for this shop.\n";
     }
 
     void searchProducts() {
         string query;
-        cout << "\nSearch: ";
+        cout << "\nProduct name: ";
         getline(cin >> ws, query);
 
         vector<ShopProductRecord> products = loadProducts();
         bool found = false;
         for (const ShopProductRecord& product : products) {
-            if (product.name.find(query) != string::npos ||
-                product.description.find(query) != string::npos ||
-                product.category.find(query) != string::npos) {
+            if (product.name.find(query) != string::npos && product.stock > 0) {
                 printProduct(product);
                 found = true;
             }

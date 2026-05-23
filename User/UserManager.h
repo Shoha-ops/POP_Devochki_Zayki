@@ -6,11 +6,15 @@
 #include <string>
 #include <vector>
 
+#include "../Cart/CartManager.h"
+#include "../Favorites/FavoritesManager.h"
+#include "../Order/OrderManager.h"
+#include "../Payment/PaymentManager.h"
+#include "../Shop/ShopManager.h"
 #include "User.h"
 
 using namespace std;
 
-// Persistent user record stored in a flat text file.
 struct StoredUser
 {
     long long id;
@@ -20,8 +24,6 @@ struct StoredUser
     string email;
 };
 
-// User manager template: registration and login are implemented here,
-// while other actions stay as placeholders for the user module team.
 class UserManager
 {
 private:
@@ -55,6 +57,17 @@ private:
         }
 
         return nullptr;
+    }
+
+    bool hasSession() const
+    {
+        if (!loggedIn || findUser(currentLogin) == nullptr)
+        {
+            cout << "No active user session.\n";
+            return false;
+        }
+
+        return true;
     }
 
     void loadUsers()
@@ -111,7 +124,6 @@ public:
         loadUsers();
     }
 
-    // Creates a new user entry and saves it to users.txt.
     void registerUser()
     {
         StoredUser user;
@@ -142,7 +154,6 @@ public:
         cout << "Registration successful!\n";
     }
 
-    // Verifies credentials against the stored user list.
     bool loginUser(string login, string password)
     {
         const StoredUser* user = findUser(login);
@@ -156,14 +167,17 @@ public:
         return false;
     }
 
-    // Clears the active session state.
     void logoutUser()
     {
         loggedIn = false;
         currentLogin.clear();
     }
 
-    // Prints the currently logged-in user's profile.
+    string getCurrentLogin() const
+    {
+        return currentLogin;
+    }
+
     void showProfile()
     {
         const StoredUser* user = findUser(currentLogin);
@@ -180,7 +194,6 @@ public:
         cout << "Email: " << user->email << '\n';
     }
 
-    // Updates profile fields for the active user and persists the result.
     void editProfile()
     {
         StoredUser* user = findUser(currentLogin);
@@ -203,24 +216,139 @@ public:
         cout << "Profile updated.\n";
     }
 
-    // Template hooks for the rest of the user module.
-    void deleteAccount() {}
-    void searchProducts() {}
-    void addToCart() {}
-    void removeFromCart() {}
-    void showCart() {}
-    void clearCart() {}
-    void createOrder() {}
-    void cancelOrder() {}
-    void showOrders() {}
-    void trackOrder() {}
-    void addFavorite() {}
-    void removeFavorite() {}
-    void showFavorites() {}
-
-    // Simple dump of stored users for debugging or admin support.
-    void showUsers()
+    void deleteAccount()
     {
+        if (!hasSession())
+        {
+            return;
+        }
+
+        for (int i = 0; i < users.size(); i++)
+        {
+            if (users[i].login == currentLogin)
+            {
+                users.erase(users.begin() + i);
+                saveUsers();
+                logoutUser();
+                cout << "Account deleted.\n";
+                return;
+            }
+        }
+
+        cout << "User not found.\n";
+    }
+
+    void searchProducts()
+    {
+        ShopManager shopManager;
+        shopManager.searchProducts();
+    }
+
+    void addToCart()
+    {
+        if (!hasSession()) return;
+
+        CartManager cartManager;
+        cartManager.addToCart(currentLogin);
+    }
+
+    void removeFromCart()
+    {
+        if (!hasSession()) return;
+
+        CartManager cartManager;
+        cartManager.removeFromCart(currentLogin);
+    }
+
+    void showCart()
+    {
+        if (!hasSession()) return;
+
+        CartManager cartManager;
+        cartManager.showCart(currentLogin);
+    }
+
+    void clearCart()
+    {
+        if (!hasSession()) return;
+
+        CartManager cartManager;
+        cartManager.clearCart(currentLogin);
+    }
+
+    void createOrder()
+    {
+        if (!hasSession()) return;
+
+        OrderManager orderManager;
+        orderManager.createOrder(currentLogin);
+    }
+
+    void cancelOrder()
+    {
+        if (!hasSession()) return;
+
+        OrderManager orderManager;
+        orderManager.cancelOrder(currentLogin);
+    }
+
+    void showOrders()
+    {
+        if (!hasSession()) return;
+
+        OrderManager orderManager;
+        orderManager.showUserOrders(currentLogin);
+    }
+
+    void trackOrder()
+    {
+        if (!hasSession()) return;
+
+        OrderManager orderManager;
+        orderManager.trackOrder(currentLogin);
+    }
+
+    void addFavorite()
+    {
+        if (!hasSession()) return;
+
+        FavoritesManager favoritesManager;
+        favoritesManager.addFavorite(currentLogin);
+    }
+
+    void removeFavorite()
+    {
+        if (!hasSession()) return;
+
+        FavoritesManager favoritesManager;
+        favoritesManager.removeFavorite(currentLogin);
+    }
+
+    void showFavorites()
+    {
+        if (!hasSession()) return;
+
+        FavoritesManager favoritesManager;
+        favoritesManager.showFavorites(currentLogin);
+    }
+
+    void makePayment()
+    {
+        if (!hasSession()) return;
+
+        PaymentManager paymentManager;
+        paymentManager.makePayment(currentLogin);
+    }
+
+    void showPaymentHistory()
+    {
+        if (!hasSession()) return;
+
+        PaymentManager paymentManager;
+        paymentManager.showPaymentHistory(currentLogin);
+    }
+
+    void showUsers() {
         cout << "\n=== USERS ===\n";
         for (const StoredUser& user : users)
         {

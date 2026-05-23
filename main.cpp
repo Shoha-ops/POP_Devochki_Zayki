@@ -69,46 +69,46 @@ void userMenu() {
             shopManager.showCatalog();
             break;
         case 4:
-            shopManager.searchProducts();
+            userManager.searchProducts();
             break;
         case 5:
-            cartManager.addToCart();
+            userManager.addToCart();
             break;
         case 6:
-            cartManager.removeFromCart();
+            userManager.removeFromCart();
             break;
         case 7:
-            cartManager.showCart();
+            userManager.showCart();
             break;
         case 8:
-            cartManager.clearCart();
+            userManager.clearCart();
             break;
         case 9:
-            orderManager.createOrder();
+            userManager.createOrder();
             break;
         case 10:
-            orderManager.cancelOrder();
+            userManager.cancelOrder();
             break;
         case 11:
-            orderManager.trackOrder();
+            userManager.trackOrder();
             break;
         case 12:
-            orderManager.showUserOrders();
+            userManager.showOrders();
             break;
         case 13:
-            paymentManager.makePayment();
+            userManager.makePayment();
             break;
         case 14:
-            paymentManager.showPaymentHistory();
+            userManager.showPaymentHistory();
             break;
         case 15:
-            favoritesManager.addFavorite();
+            userManager.addFavorite();
             break;
         case 16:
-            favoritesManager.removeFavorite();
+            userManager.removeFavorite();
             break;
         case 17:
-            favoritesManager.showFavorites();
+            userManager.showFavorites();
             break;
         case 18:
             userManager.logoutUser();
