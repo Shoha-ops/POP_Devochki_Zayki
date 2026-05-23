@@ -15,8 +15,7 @@
 
 using namespace std;
 
-struct StoredUser
-{
+struct StoredUser {
     long long id;
     string name;
     string login;
@@ -24,8 +23,7 @@ struct StoredUser
     string email;
 };
 
-class UserManager
-{
+class UserManager {
 private:
     vector<StoredUser> users;
     string storagePath;
@@ -33,12 +31,9 @@ private:
     bool loggedIn;
     string currentLogin;
 
-    const StoredUser* findUser(const string& login) const
-    {
-        for (const StoredUser& user : users)
-        {
-            if (user.login == login)
-            {
+    const StoredUser* findUser(const string& login) const {
+        for (const StoredUser& user : users) {
+            if (user.login == login) {
                 return &user;
             }
         }
@@ -46,12 +41,9 @@ private:
         return nullptr;
     }
 
-    StoredUser* findUser(const string& login)
-    {
-        for (StoredUser& user : users)
-        {
-            if (user.login == login)
-            {
+    StoredUser* findUser(const string& login) {
+        for (StoredUser& user : users) {
+            if (user.login == login) {
                 return &user;
             }
         }
@@ -59,10 +51,8 @@ private:
         return nullptr;
     }
 
-    bool hasSession() const
-    {
-        if (!loggedIn || findUser(currentLogin) == nullptr)
-        {
+    bool hasSession() const {
+        if (!loggedIn || findUser(currentLogin) == nullptr) {
             cout << "No active user session.\n";
             return false;
         }
@@ -70,21 +60,17 @@ private:
         return true;
     }
 
-    void loadUsers()
-    {
+    void loadUsers() {
         users.clear();
 
         ifstream inFile(storagePath);
-        if (!inFile.is_open())
-        {
+        if (!inFile.is_open()) {
             return;
         }
 
         string line;
-        while (getline(inFile, line))
-        {
-            if (line.empty())
-            {
+        while (getline(inFile, line)) {
+            if (line.empty()) {
                 continue;
             }
 
@@ -92,40 +78,40 @@ private:
             string idText;
             StoredUser user;
 
-            if (!getline(ss, idText, '|')) continue;
-            if (!getline(ss, user.name, '|')) continue;
-            if (!getline(ss, user.login, '|')) continue;
-            if (!getline(ss, user.password, '|')) continue;
-            if (!getline(ss, user.email, '|')) continue;
+            if (!getline(ss, idText, '|'))
+                continue;
+            if (!getline(ss, user.name, '|'))
+                continue;
+            if (!getline(ss, user.login, '|'))
+                continue;
+            if (!getline(ss, user.password, '|'))
+                continue;
+            if (!getline(ss, user.email, '|'))
+                continue;
 
             user.id = stoll(idText);
             users.push_back(user);
 
-            if (user.id >= nextUserId)
-            {
+            if (user.id >= nextUserId) {
                 nextUserId = user.id + 1;
             }
         }
     }
 
-    void saveUsers() const
-    {
+    void saveUsers() const {
         ofstream outFile(storagePath, ios::trunc);
-        for (const StoredUser& user : users)
-        {
+        for (const StoredUser& user : users) {
             outFile << user.id << '|' << user.name << '|' << user.login << '|' << user.password << '|' << user.email << '\n';
         }
     }
 
 public:
     explicit UserManager(const string& filePath = "users.txt")
-        : storagePath(filePath), nextUserId(7000000000LL), loggedIn(false)
-    {
+        : storagePath(filePath), nextUserId(7000000000LL), loggedIn(false) {
         loadUsers();
     }
 
-    void registerUser()
-    {
+    void registerUser() {
         StoredUser user;
         user.id = nextUserId++;
 
@@ -135,8 +121,7 @@ public:
         cout << "Enter login: ";
         getline(cin >> ws, user.login);
 
-        if (findUser(user.login) != nullptr)
-        {
+        if (findUser(user.login) != nullptr) {
             cout << "Login already exists!\n";
             --nextUserId;
             return;
@@ -154,11 +139,9 @@ public:
         cout << "Registration successful!\n";
     }
 
-    bool loginUser(string login, string password)
-    {
+    bool loginUser(string login, string password) {
         const StoredUser* user = findUser(login);
-        if (user != nullptr && user->password == password)
-        {
+        if (user != nullptr && user->password == password) {
             loggedIn = true;
             currentLogin = login;
             return true;
@@ -167,22 +150,18 @@ public:
         return false;
     }
 
-    void logoutUser()
-    {
+    void logoutUser() {
         loggedIn = false;
         currentLogin.clear();
     }
 
-    string getCurrentLogin() const
-    {
+    string getCurrentLogin() const {
         return currentLogin;
     }
 
-    void showProfile()
-    {
+    void showProfile() {
         const StoredUser* user = findUser(currentLogin);
-        if (!loggedIn || user == nullptr)
-        {
+        if (!loggedIn || user == nullptr) {
             cout << "No active user session.\n";
             return;
         }
@@ -194,11 +173,9 @@ public:
         cout << "Email: " << user->email << '\n';
     }
 
-    void editProfile()
-    {
+    void editProfile() {
         StoredUser* user = findUser(currentLogin);
-        if (!loggedIn || user == nullptr)
-        {
+        if (!loggedIn || user == nullptr) {
             cout << "No active user session.\n";
             return;
         }
@@ -216,17 +193,13 @@ public:
         cout << "Profile updated.\n";
     }
 
-    void deleteAccount()
-    {
-        if (!hasSession())
-        {
+    void deleteAccount() {
+        if (!hasSession()) {
             return;
         }
 
-        for (int i = 0; i < users.size(); i++)
-        {
-            if (users[i].login == currentLogin)
-            {
+        for (int i = 0; i < users.size(); i++) {
+            if (users[i].login == currentLogin) {
                 users.erase(users.begin() + i);
                 saveUsers();
                 logoutUser();
@@ -238,111 +211,110 @@ public:
         cout << "User not found.\n";
     }
 
-    void searchProducts()
-    {
+    void searchProducts() {
         ShopManager shopManager;
         shopManager.searchProducts();
     }
 
-    void addToCart()
-    {
-        if (!hasSession()) return;
+    void addToCart() {
+        if (!hasSession())
+            return;
 
         CartManager cartManager;
         cartManager.addToCart(currentLogin);
     }
 
-    void removeFromCart()
-    {
-        if (!hasSession()) return;
+    void removeFromCart() {
+        if (!hasSession())
+            return;
 
         CartManager cartManager;
         cartManager.removeFromCart(currentLogin);
     }
 
-    void showCart()
-    {
-        if (!hasSession()) return;
+    void showCart() {
+        if (!hasSession())
+            return;
 
         CartManager cartManager;
         cartManager.showCart(currentLogin);
     }
 
-    void clearCart()
-    {
-        if (!hasSession()) return;
+    void clearCart() {
+        if (!hasSession())
+            return;
 
         CartManager cartManager;
         cartManager.clearCart(currentLogin);
     }
 
-    void createOrder()
-    {
-        if (!hasSession()) return;
+    void createOrder() {
+        if (!hasSession())
+            return;
 
         OrderManager orderManager;
         orderManager.createOrder(currentLogin);
     }
 
-    void cancelOrder()
-    {
-        if (!hasSession()) return;
+    void cancelOrder() {
+        if (!hasSession())
+            return;
 
         OrderManager orderManager;
         orderManager.cancelOrder(currentLogin);
     }
 
-    void showOrders()
-    {
-        if (!hasSession()) return;
+    void showOrders() {
+        if (!hasSession())
+            return;
 
         OrderManager orderManager;
         orderManager.showUserOrders(currentLogin);
     }
 
-    void trackOrder()
-    {
-        if (!hasSession()) return;
+    void trackOrder() {
+        if (!hasSession())
+            return;
 
         OrderManager orderManager;
         orderManager.trackOrder(currentLogin);
     }
 
-    void addFavorite()
-    {
-        if (!hasSession()) return;
+    void addFavorite() {
+        if (!hasSession())
+            return;
 
         FavoritesManager favoritesManager;
         favoritesManager.addFavorite(currentLogin);
     }
 
-    void removeFavorite()
-    {
-        if (!hasSession()) return;
+    void removeFavorite() {
+        if (!hasSession())
+            return;
 
         FavoritesManager favoritesManager;
         favoritesManager.removeFavorite(currentLogin);
     }
 
-    void showFavorites()
-    {
-        if (!hasSession()) return;
+    void showFavorites() {
+        if (!hasSession())
+            return;
 
         FavoritesManager favoritesManager;
         favoritesManager.showFavorites(currentLogin);
     }
 
-    void makePayment()
-    {
-        if (!hasSession()) return;
+    void makePayment() {
+        if (!hasSession())
+            return;
 
         PaymentManager paymentManager;
         paymentManager.makePayment(currentLogin);
     }
 
-    void showPaymentHistory()
-    {
-        if (!hasSession()) return;
+    void showPaymentHistory() {
+        if (!hasSession())
+            return;
 
         PaymentManager paymentManager;
         paymentManager.showPaymentHistory(currentLogin);
@@ -350,8 +322,7 @@ public:
 
     void showUsers() {
         cout << "\n=== USERS ===\n";
-        for (const StoredUser& user : users)
-        {
+        for (const StoredUser& user : users) {
             cout << user.id << " | " << user.name << " | " << user.login << " | " << user.email << '\n';
         }
     }
