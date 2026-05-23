@@ -1,12 +1,10 @@
+#pragma once
 #include <string>
-
 using namespace std;
 
-class Admin
-{
-public:
+struct StoredAdmin {
+    int id;
     string login;
     string password;
-
     string role;
 };
