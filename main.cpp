@@ -213,7 +213,7 @@ void adminMenu() {
             adminManager.deleteUser(userManager);
             break;
         case 7:
-            shopManager.rejectShop();
+            adminManager.removeShop(shopManager);
             break;
         case 8:
             adminManager.logoutAdmin();
@@ -236,12 +236,11 @@ void headAdminMenu() {
         cout << "4. Show All Users\n";
         cout << "5. Show All Shops\n";
         cout << "6. Delete User\n";
-        cout << "7. Ban User\n";
-        cout << "8. Remove Shop\n";
-        cout << "9. Add Admin\n";
-        cout << "10. Remove Admin\n";
-        cout << "11. Show Statistics\n";
-        cout << "12. Logout\n";
+        cout << "7. Remove Shop\n";
+        cout << "8. Add Admin\n";
+        cout << "9. Remove Admin\n";
+        cout << "10. Show Statistics\n";
+        cout << "11. Logout\n";
         cout << "\nChoose: ";
 
         choice = safeInput<int>();
@@ -266,21 +265,18 @@ void headAdminMenu() {
             adminManager.deleteUser(userManager);
             break;
         case 7:
-            adminManager.banUser(userManager);
+            adminManager.removeShop(shopManager);
             break;
         case 8:
-            shopManager.rejectShop();
-            break;
-        case 9:
             adminManager.addAdmin();
             break;
-        case 10:
+        case 9:
             adminManager.removeAdmin();
             break;
-        case 11:
+        case 10:
             adminManager.showStatistics();
             break;
-        case 12:
+        case 11:
             adminManager.logoutAdmin();
             headAdminManager.logoutHeadAdmin();
             cout << "\nHead admin logged out successfully!\n";
@@ -288,7 +284,7 @@ void headAdminMenu() {
         default:
             cout << "Invalid choice!\n";
         }
-    } while (choice != 12);
+    } while (choice != 11);
 }
 
 void loginFlow() {

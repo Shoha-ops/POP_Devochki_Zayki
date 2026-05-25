@@ -264,6 +264,10 @@ public:
         loadShops();
     }
 
+    void reloadShops() {
+        loadShops();
+    }
+
     // Creates a shop profile and stores it in memory for this run.
     void registerShop() {
         Shop shop;

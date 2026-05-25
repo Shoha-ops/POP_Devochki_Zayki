@@ -12,6 +12,7 @@
 using namespace std;
 
 class UserManager;
+class ShopManager;
 
 class AdminManager {
 protected: // протектед чтобы хедадмин мог видеть
@@ -80,6 +81,21 @@ protected: // протектед чтобы хедадмин мог видеть
             outFile << line << '\n';
     }
 
+    vector<string> readShopLines() const {
+    vector<string> lines;
+    ifstream inFile("shops.txt");
+    string line;
+    while (getline(inFile, line))
+        if (!line.empty()) lines.push_back(line);
+    return lines;
+}
+
+void rewriteShops(const vector<string>& lines) const {
+    ofstream outFile("shops.txt", ios::trunc);
+    for (const string& line : lines)
+        outFile << line << '\n';
+}
+
     vector<string> splitLine(const string& line, char delim) const {
         vector<string> parts;
         string part;
@@ -124,7 +140,7 @@ public:
         currentRole.clear();
     }
 
-    void deleteUser(UserManager&) {
+    void deleteUser(UserManager& userManager) {
         string login;
         cout << "\nUser login to delete: ";
         getline(cin >> ws, login);
@@ -141,40 +157,38 @@ public:
             }
         }
 
-        if (found) { rewriteUsers(lines); cout << "User deleted.\n"; }
-        else        { cout << "User not found.\n"; }
+        if (found) {
+            rewriteUsers(lines);
+            userManager.reloadUsers();
+            cout << "User deleted.\n"; }
+        else {
+            cout << "User not found.\n"; }
     }
 
-    void banUser(UserManager&) {
-        string login;
-        cout << "\nUser login to ban: ";
-        getline(cin >> ws, login);
+    void removeShop(ShopManager& shopManager) {
+    string login;
+    cout << "\nShop login to remove: ";
+    getline(cin >> ws, login);
 
-        vector<string> lines = readUserLines();
-        bool found = false;
+    vector<string> lines = readShopLines();
+    bool found = false;
 
-        for (string& line : lines) {
-            vector<string> parts = splitLine(line, '|');
-            if (parts.size() >= 3 && parts[2] == login) {
-                if (parts[2].rfind("[BANNED]", 0) == 0) {
-                    cout << "User is already banned.\n";
-                    return;
-                }
-                parts[2] = "[BANNED]" + parts[2];
-                string newLine;
-                for (int i = 0; i < (int)parts.size(); i++) {
-                    if (i > 0) newLine += '|';
-                    newLine += parts[i];
-                }
-                line  = newLine;
-                found = true;
-                break;
-            }
+    for (auto it = lines.begin(); it != lines.end(); ++it) {
+        vector<string> parts = splitLine(*it, '|');
+        if (parts.size() >= 4 && parts[3] == login) {
+            lines.erase(it);
+            found = true;
+            break;
         }
-
-        if (found) { rewriteUsers(lines); cout << "User banned.\n"; }
-        else        { cout << "User not found.\n"; }
     }
+
+    if (found) {
+        rewriteShops(lines); 
+        shopManager.reloadShops();
+        cout << "Shop removed.\n"; }
+    else {
+        cout << "Shop not found.\n"; }
+}
 
     void addAdmin() {
         StoredAdmin admin;

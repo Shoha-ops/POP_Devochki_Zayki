@@ -111,6 +111,10 @@ public:
         loadUsers();
     }
 
+    void reloadUsers() {
+         loadUsers();
+     }
+
     void registerUser() {
         StoredUser user;
         user.id = nextUserId++;
