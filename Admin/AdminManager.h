@@ -7,12 +7,11 @@
 #include <vector>
 
 #include "../Core/check.h" //не пригодился тк не использовала ввод чисел
+#include "../User/UserManager.h"
+#include "../Shop/ShopManager.h"
 #include "Admin.h"
 
 using namespace std;
-
-class UserManager;
-class ShopManager;
 
 class AdminManager {
 protected: // протектед чтобы хедадмин мог видеть
