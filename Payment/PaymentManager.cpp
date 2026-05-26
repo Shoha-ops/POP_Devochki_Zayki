@@ -191,14 +191,6 @@ int getNextPaymentId(const vector<PaymentRecord>& payments) {
     return nextId;
 }
 
-void PaymentManager::makePayment() {
-    string userLogin;
-
-    cout << "\nUser login: ";
-    getline(cin >> ws, userLogin);
-    makePayment(userLogin);
-}
-
 void PaymentManager::makePayment(string userLogin) {
     int orderId;
     string method;
@@ -286,14 +278,6 @@ void PaymentManager::refundPayment() {
     savePaymentList(payments);
     savePaymentOrders(orders);
     cout << "Refund completed. Amount: " << order->total << '\n';
-}
-
-void PaymentManager::showPaymentHistory() {
-    string userLogin;
-
-    cout << "\nUser login: ";
-    getline(cin >> ws, userLogin);
-    showPaymentHistory(userLogin);
 }
 
 void PaymentManager::showPaymentHistory(string userLogin) {

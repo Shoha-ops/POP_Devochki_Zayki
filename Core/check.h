@@ -23,4 +23,4 @@ T safeInput(T minValue = std::numeric_limits<T>::lowest(), T maxValue = std::num
     }
 }
 
-#endif // CORE_CHECK_H
+#endif

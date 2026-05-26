@@ -43,8 +43,6 @@ struct ShopOrderRecord {
     string paymentStatus;
 };
 
-// Shop module template with a working registration/login flow.
-// Other teams can extend the declared hooks later without changing the entry flow.
 class ShopManager {
 private:
     vector<Shop> shops;
@@ -268,7 +266,6 @@ public:
         loadShops();
     }
 
-    // Creates a shop profile and stores it in memory for this run.
     void registerShop() {
         Shop shop;
         shop.id = nextShopId++;
@@ -303,7 +300,6 @@ public:
         cout << "\nShop registration request sent!\n";
     }
 
-    // Returns 1 for approved shops, 2 for pending approval, 0 if the credentials do not match.
     int loginShop(string login, string password) {
         Shop* shop = findShop(login);
         if (shop == nullptr || shop->password != password) {
@@ -323,7 +319,6 @@ public:
         cout << "\nShop logged out successfully!\n";
     }
 
-    // Admin-facing actions for the shop queue.
     void approveShop() {
         string login;
 

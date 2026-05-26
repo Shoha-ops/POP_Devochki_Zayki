@@ -98,18 +98,6 @@ void saveFavoriteList(const vector<pair<string, int>>& favorites) {
     }
 }
 
-static string askFavoriteUser() {
-    string userLogin;
-    cout << "User login: ";
-    getline(cin >> ws, userLogin);
-    return userLogin;
-}
-
-void FavoritesManager::addFavorite() {
-    string userLogin = askFavoriteUser();
-    addFavorite(userLogin);
-}
-
 void FavoritesManager::addFavorite(string userLogin) {
     int productId;
 
@@ -136,11 +124,6 @@ void FavoritesManager::addFavorite(string userLogin) {
     cout << "Added to favorites.\n";
 }
 
-void FavoritesManager::removeFavorite() {
-    string userLogin = askFavoriteUser();
-    removeFavorite(userLogin);
-}
-
 void FavoritesManager::removeFavorite(string userLogin) {
     int productId;
 
@@ -159,11 +142,6 @@ void FavoritesManager::removeFavorite(string userLogin) {
     }
 
     cout << "Favorite not found.\n";
-}
-
-void FavoritesManager::showFavorites() {
-    string userLogin = askFavoriteUser();
-    showFavorites(userLogin);
 }
 
 void FavoritesManager::showFavorites(string userLogin) {

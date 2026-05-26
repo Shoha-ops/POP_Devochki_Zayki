@@ -34,7 +34,6 @@ vector<string> splitCartLine(const string& line) {
 
     return parts;
 }
-
 vector<CartProductRecord> loadCartProducts() {
     vector<CartProductRecord> products;
     ifstream file("products.txt");
@@ -99,18 +98,6 @@ void saveCart(const vector<CartItemRecord>& cart) {
     }
 }
 
-static string askCartUser() {
-    string userLogin;
-    cout << "User login: ";
-    getline(cin >> ws, userLogin);
-    return userLogin;
-}
-
-void CartManager::addToCart() {
-    string userLogin = askCartUser();
-    addToCart(userLogin);
-}
-
 void CartManager::addToCart(string userLogin) {
     int productId;
     int quantity;
@@ -160,11 +147,6 @@ void CartManager::addToCart(string userLogin) {
     cout << "Added to cart.\n";
 }
 
-void CartManager::removeFromCart() {
-    string userLogin = askCartUser();
-    removeFromCart(userLogin);
-}
-
 void CartManager::removeFromCart(string userLogin) {
     int productId;
 
@@ -185,11 +167,6 @@ void CartManager::removeFromCart(string userLogin) {
     cout << "Product not found in cart.\n";
 }
 
-void CartManager::clearCart() {
-    string userLogin = askCartUser();
-    clearCart(userLogin);
-}
-
 void CartManager::clearCart(string userLogin) {
     vector<CartItemRecord> cart = loadCart();
 
@@ -199,11 +176,6 @@ void CartManager::clearCart(string userLogin) {
 
     saveCart(cart);
     cout << "Cart cleared.\n";
-}
-
-void CartManager::showCart() {
-    string userLogin = askCartUser();
-    showCart(userLogin);
 }
 
 void CartManager::showCart(string userLogin) {
@@ -232,8 +204,4 @@ void CartManager::showCart(string userLogin) {
     }
 
     cout << "Total: " << total << '\n';
-}
-
-void CartManager::calculateTotal() {
-    showCart();
 }

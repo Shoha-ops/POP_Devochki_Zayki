@@ -220,18 +220,6 @@ OrderRecord* findOrder(vector<OrderRecord>& orders, int orderId) {
     return nullptr;
 }
 
-string askOrderUser() {
-    string userLogin;
-    cout << "User login: ";
-    getline(cin >> ws, userLogin);
-    return userLogin;
-}
-
-void OrderManager::createOrder() {
-    string userLogin = askOrderUser();
-    createOrder(userLogin);
-}
-
 void OrderManager::createOrder(string userLogin) {
     string address;
 
@@ -293,11 +281,6 @@ void OrderManager::createOrder(string userLogin) {
     cout << "Order created. ID: " << order.id << ", total: " << order.total << '\n';
 }
 
-void OrderManager::cancelOrder() {
-    string userLogin = askOrderUser();
-    cancelOrder(userLogin);
-}
-
 void OrderManager::cancelOrder(string userLogin) {
     int orderId;
 
@@ -330,11 +313,6 @@ void OrderManager::cancelOrder(string userLogin) {
     saveOrders(orders);
     saveOrderProducts(products);
     cout << "Order cancelled.\n";
-}
-
-void OrderManager::trackOrder() {
-    string userLogin = askOrderUser();
-    trackOrder(userLogin);
 }
 
 void OrderManager::trackOrder(string userLogin) {
@@ -379,11 +357,6 @@ void OrderManager::updateOrderStatus() {
     order->status = status;
     saveOrders(orders);
     cout << "Order status updated.\n";
-}
-
-void OrderManager::showUserOrders() {
-    string userLogin = askOrderUser();
-    showUserOrders(userLogin);
 }
 
 void OrderManager::showUserOrders(string userLogin) {

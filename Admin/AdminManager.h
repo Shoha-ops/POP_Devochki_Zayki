@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "../Core/check.h" //не пригодился тк не использовала ввод чисел
 #include "../User/UserManager.h"
 #include "../Shop/ShopManager.h"
 #include "Admin.h"
@@ -14,7 +13,7 @@
 using namespace std;
 
 class AdminManager {
-protected: // протектед чтобы хедадмин мог видеть
+protected:
     vector<StoredAdmin> admins;
     string storagePath;
     int nextAdminId;
