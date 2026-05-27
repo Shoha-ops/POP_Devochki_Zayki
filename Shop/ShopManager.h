@@ -62,7 +62,7 @@ private:
         return parts;
     }
 
-    string cleanField(string value) {
+    string cleanField(string value) const {
         replace(value.begin(), value.end(), '|', '/');
         replace(value.begin(), value.end(), ';', ',');
         replace(value.begin(), value.end(), '#', '-');
@@ -78,17 +78,22 @@ private:
             vector<string> parts = splitText(line, '|');
             if (parts.size() < 9) continue;
 
-            ShopProductRecord product;
-            product.id = stoi(parts[0]);
-            product.name = parts[1];
-            product.description = parts[2];
-            product.price = stod(parts[3]);
-            product.stock = stoi(parts[4]);
-            product.category = parts[5];
-            product.shopLogin = parts[6];
-            product.shopName = parts[7];
-            product.rating = stod(parts[8]);
-            products.push_back(product);
+            try {
+                ShopProductRecord product;
+                product.id = stoi(parts[0]);
+                product.name = parts[1];
+                product.description = parts[2];
+                product.price = stod(parts[3]);
+                product.stock = stoi(parts[4]);
+                product.category = parts[5];
+                product.shopLogin = parts[6];
+                product.shopName = parts[7];
+                product.rating = stod(parts[8]);
+                products.push_back(product);
+            }
+            catch (...) {
+                continue;
+            }
         }
 
         return products;
@@ -148,30 +153,35 @@ private:
             vector<string> parts = splitText(line, '|');
             if (parts.size() < 7) continue;
 
-            ShopOrderRecord order;
-            order.id = stoi(parts[0]);
-            order.userLogin = parts[1];
-            order.total = stod(parts[2]);
-            order.status = parts[3];
-            order.address = parts[4];
-            order.paymentStatus = parts[5];
+            try {
+                ShopOrderRecord order;
+                order.id = stoi(parts[0]);
+                order.userLogin = parts[1];
+                order.total = stod(parts[2]);
+                order.status = parts[3];
+                order.address = parts[4];
+                order.paymentStatus = parts[5];
 
-            vector<string> itemParts = splitText(parts[6], ';');
-            for (const string& itemText : itemParts) {
-                if (itemText.empty()) continue;
-                vector<string> fields = splitText(itemText, '#');
-                if (fields.size() < 5) continue;
+                vector<string> itemParts = splitText(parts[6], ';');
+                for (const string& itemText : itemParts) {
+                    if (itemText.empty()) continue;
+                    vector<string> fields = splitText(itemText, '#');
+                    if (fields.size() < 5) continue;
 
-                ShopOrderItemRecord item;
-                item.productId = stoi(fields[0]);
-                item.productName = fields[1];
-                item.shopLogin = fields[2];
-                item.quantity = stoi(fields[3]);
-                item.price = stod(fields[4]);
-                order.items.push_back(item);
+                    ShopOrderItemRecord item;
+                    item.productId = stoi(fields[0]);
+                    item.productName = fields[1];
+                    item.shopLogin = fields[2];
+                    item.quantity = stoi(fields[3]);
+                    item.price = stod(fields[4]);
+                    order.items.push_back(item);
+                }
+
+                orders.push_back(order);
             }
-
-            orders.push_back(order);
+            catch (...) {
+                continue;
+            }
         }
 
         return orders;
@@ -223,26 +233,31 @@ private:
                 continue;
             }
 
-            stringstream ss(line);
+            stringstream stream(line);
             string idText;
             Shop shop;
 
-            if (!getline(ss, idText, '|')) continue;
-            if (!getline(ss, shop.shopName, '|')) continue;
-            if (!getline(ss, shop.ownerName, '|')) continue;
-            if (!getline(ss, shop.login, '|')) continue;
-            if (!getline(ss, shop.password, '|')) continue;
-            if (!getline(ss, shop.email, '|')) continue;
+            if (!getline(stream, idText, '|')) continue;
+            if (!getline(stream, shop.shopName, '|')) continue;
+            if (!getline(stream, shop.ownerName, '|')) continue;
+            if (!getline(stream, shop.login, '|')) continue;
+            if (!getline(stream, shop.password, '|')) continue;
+            if (!getline(stream, shop.email, '|')) continue;
 
             string approvedText;
-            if (!getline(ss, approvedText, '|')) continue;
+            if (!getline(stream, approvedText, '|')) continue;
 
-            shop.id = stoi(idText);
-            shop.approved = (approvedText == "1");
-            shops.push_back(shop);
+            try {
+                shop.id = stoi(idText);
+                shop.approved = (approvedText == "1");
+                shops.push_back(shop);
 
-            if (shop.id >= nextShopId) {
-                nextShopId = shop.id + 1;
+                if (shop.id >= nextShopId) {
+                    nextShopId = shop.id + 1;
+                }
+            }
+            catch (...) {
+                continue;
             }
         }
     }
@@ -250,8 +265,8 @@ private:
     void saveShops() const {
         ofstream outFile(storagePath, ios::trunc);
         for (const Shop& shop : shops) {
-            outFile << shop.id << '|' << shop.shopName << '|' << shop.ownerName << '|'
-                    << shop.login << '|' << shop.password << '|' << shop.email << '|'
+            outFile << shop.id << '|' << cleanField(shop.shopName) << '|' << cleanField(shop.ownerName) << '|'
+                    << cleanField(shop.login) << '|' << cleanField(shop.password) << '|' << cleanField(shop.email) << '|'
                     << (shop.approved ? "1" : "0") << '\n';
         }
     }
@@ -274,12 +289,15 @@ public:
 
         cout << "Shop name: ";
         getline(cin >> ws, shop.shopName);
+        shop.shopName = cleanField(shop.shopName);
 
         cout << "Owner name: ";
         getline(cin >> ws, shop.ownerName);
+        shop.ownerName = cleanField(shop.ownerName);
 
         cout << "Login: ";
         getline(cin >> ws, shop.login);
+        shop.login = cleanField(shop.login);
 
         if (findShop(shop.login) != nullptr) {
             cout << "Login already exists!\n";
@@ -289,9 +307,11 @@ public:
 
         cout << "Password: ";
         getline(cin >> ws, shop.password);
+        shop.password = cleanField(shop.password);
 
         cout << "Email: ";
         getline(cin >> ws, shop.email);
+        shop.email = cleanField(shop.email);
 
         shop.approved = false;
         shops.push_back(shop);
@@ -632,6 +652,37 @@ public:
             }
 
             if (order.id == id && hasShopItem) {
+                if (order.status == status) {
+                    cout << "Order is already " << status << ".\n";
+                    return;
+                }
+
+                if (status == "Completed" && order.paymentStatus != "Paid") {
+                    cout << "Order must be paid before completion.\n";
+                    return;
+                }
+
+                if (status == "Declined" && order.paymentStatus == "Paid") {
+                    cout << "Paid order cannot be declined by shop.\n";
+                    return;
+                }
+
+                if (order.status == "Cancelled" || order.status == "Refunded") {
+                    cout << "Order cannot be changed from " << order.status << ".\n";
+                    return;
+                }
+
+                if (status == "Declined") {
+                    vector<ShopProductRecord> products = loadProducts();
+                    for (const ShopOrderItemRecord& item : order.items) {
+                        ShopProductRecord* product = findProduct(products, item.productId);
+                        if (product != nullptr) {
+                            product->stock += item.quantity;
+                        }
+                    }
+                    saveProducts(products);
+                }
+
                 order.status = status;
                 saveOrders(orders);
                 cout << "Order status updated to " << status << ".\n";

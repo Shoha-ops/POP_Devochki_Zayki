@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "Cart.h"
-
 using namespace std;
 
 class CartManager {

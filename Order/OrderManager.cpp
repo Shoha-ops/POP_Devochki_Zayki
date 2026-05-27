@@ -75,17 +75,22 @@ vector<OrderProductRecord> loadOrderProducts() {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 9) continue;
 
-        OrderProductRecord product;
-        product.id = stoi(parts[0]);
-        product.name = parts[1];
-        product.description = parts[2];
-        product.price = stod(parts[3]);
-        product.stock = stoi(parts[4]);
-        product.category = parts[5];
-        product.shopLogin = parts[6];
-        product.shopName = parts[7];
-        product.rating = stod(parts[8]);
-        products.push_back(product);
+        try {
+            OrderProductRecord product;
+            product.id = stoi(parts[0]);
+            product.name = parts[1];
+            product.description = parts[2];
+            product.price = stod(parts[3]);
+            product.stock = stoi(parts[4]);
+            product.category = parts[5];
+            product.shopLogin = parts[6];
+            product.shopName = parts[7];
+            product.rating = stod(parts[8]);
+            products.push_back(product);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return products;
@@ -124,11 +129,16 @@ vector<OrderCartItemRecord> loadOrderCart() {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 3) continue;
 
-        OrderCartItemRecord item;
-        item.userLogin = parts[0];
-        item.productId = stoi(parts[1]);
-        item.quantity = stoi(parts[2]);
-        cart.push_back(item);
+        try {
+            OrderCartItemRecord item;
+            item.userLogin = parts[0];
+            item.productId = stoi(parts[1]);
+            item.quantity = stoi(parts[2]);
+            cart.push_back(item);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return cart;
@@ -150,30 +160,35 @@ vector<OrderRecord> loadOrders() {
         vector<string> parts = splitOrderText(line, '|');
         if (parts.size() < 7) continue;
 
-        OrderRecord order;
-        order.id = stoi(parts[0]);
-        order.userLogin = parts[1];
-        order.total = stod(parts[2]);
-        order.status = parts[3];
-        order.address = parts[4];
-        order.paymentStatus = parts[5];
+        try {
+            OrderRecord order;
+            order.id = stoi(parts[0]);
+            order.userLogin = parts[1];
+            order.total = stod(parts[2]);
+            order.status = parts[3];
+            order.address = parts[4];
+            order.paymentStatus = parts[5];
 
-        vector<string> itemParts = splitOrderText(parts[6], ';');
-        for (const string& itemText : itemParts) {
-            if (itemText.empty()) continue;
-            vector<string> fields = splitOrderText(itemText, '#');
-            if (fields.size() < 5) continue;
+            vector<string> itemParts = splitOrderText(parts[6], ';');
+            for (const string& itemText : itemParts) {
+                if (itemText.empty()) continue;
+                vector<string> fields = splitOrderText(itemText, '#');
+                if (fields.size() < 5) continue;
 
-            OrderItemRecord item;
-            item.productId = stoi(fields[0]);
-            item.productName = fields[1];
-            item.shopLogin = fields[2];
-            item.quantity = stoi(fields[3]);
-            item.price = stod(fields[4]);
-            order.items.push_back(item);
+                OrderItemRecord item;
+                item.productId = stoi(fields[0]);
+                item.productName = fields[1];
+                item.shopLogin = fields[2];
+                item.quantity = stoi(fields[3]);
+                item.price = stod(fields[4]);
+                order.items.push_back(item);
+            }
+
+            orders.push_back(order);
         }
-
-        orders.push_back(order);
+        catch (...) {
+            continue;
+        }
     }
 
     return orders;
@@ -238,6 +253,7 @@ void OrderManager::createOrder(string userLogin) {
     order.total = 0.0;
 
     bool hasItems = false;
+    string orderShopLogin;
     for (const OrderCartItemRecord& cartItem : cart) {
         if (cartItem.userLogin != userLogin) continue;
 
@@ -252,6 +268,12 @@ void OrderManager::createOrder(string userLogin) {
             return;
         }
 
+        if (!orderShopLogin.empty() && orderShopLogin != product->shopLogin) {
+            cout << "Order can contain products from one shop only.\n";
+            return;
+        }
+        orderShopLogin = product->shopLogin;
+
         OrderItemRecord item;
         item.productId = product->id;
         item.productName = product->name;
@@ -260,7 +282,6 @@ void OrderManager::createOrder(string userLogin) {
         item.price = product->price;
         order.items.push_back(item);
         order.total += product->price * cartItem.quantity;
-        product->stock -= cartItem.quantity;
         hasItems = true;
     }
 
@@ -272,6 +293,13 @@ void OrderManager::createOrder(string userLogin) {
     cart.erase(remove_if(cart.begin(), cart.end(), [&](const OrderCartItemRecord& item) {
         return item.userLogin == userLogin;
     }), cart.end());
+
+    for (const OrderItemRecord& item : order.items) {
+        OrderProductRecord* product = findOrderProduct(products, item.productId);
+        if (product != nullptr) {
+            product->stock -= item.quantity;
+        }
+    }
 
     orders.push_back(order);
     saveOrders(orders);
@@ -297,8 +325,13 @@ void OrderManager::cancelOrder(string userLogin) {
         return;
     }
 
-    if (order->status == "Completed" || order->status == "Cancelled") {
+    if (order->status == "Completed" || order->status == "Cancelled" || order->status == "Declined") {
         cout << "Order cannot be cancelled.\n";
+        return;
+    }
+
+    if (order->paymentStatus == "Paid" || order->paymentStatus == "Refunded") {
+        cout << "Paid or refunded order cannot be cancelled here.\n";
         return;
     }
 

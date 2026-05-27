@@ -43,12 +43,17 @@ vector<CartProductRecord> loadCartProducts() {
         vector<string> parts = splitCartLine(line);
         if (parts.size() < 9) continue;
 
-        CartProductRecord product;
-        product.id = stoi(parts[0]);
-        product.name = parts[1];
-        product.price = stod(parts[3]);
-        product.stock = stoi(parts[4]);
-        products.push_back(product);
+        try {
+            CartProductRecord product;
+            product.id = stoi(parts[0]);
+            product.name = parts[1];
+            product.price = stod(parts[3]);
+            product.stock = stoi(parts[4]);
+            products.push_back(product);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return products;
@@ -81,11 +86,16 @@ vector<CartItemRecord> loadCart() {
         vector<string> parts = splitCartLine(line);
         if (parts.size() < 3) continue;
 
-        CartItemRecord item;
-        item.userLogin = parts[0];
-        item.productId = stoi(parts[1]);
-        item.quantity = stoi(parts[2]);
-        cart.push_back(item);
+        try {
+            CartItemRecord item;
+            item.userLogin = parts[0];
+            item.productId = stoi(parts[1]);
+            item.quantity = stoi(parts[2]);
+            cart.push_back(item);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return cart;

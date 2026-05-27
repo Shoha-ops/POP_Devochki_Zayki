@@ -10,15 +10,6 @@
 #include "Payment/PaymentManager.h"
 #include "Shop/ShopManager.h"
 #include "User/UserManager.h"
-#include "Cart/Cart.cpp"
-#include "Cart/CartManager.cpp"
-#include "Favorites/FavoritesManager.cpp"
-#include "Order/Order.cpp"
-#include "Order/OrderManager.cpp"
-#include "Payment/PaymentManager.cpp"
-#include "Product/Product.cpp"
-#include "Product/ProductManager.cpp"
-#include "Shop/Shop.cpp"
 
 using namespace std;
 
@@ -26,10 +17,6 @@ UserManager userManager;
 ShopManager shopManager;
 AdminManager adminManager;
 HeadAdminManager headAdminManager;
-CartManager cartManager;
-FavoritesManager favoritesManager;
-OrderManager orderManager;
-PaymentManager paymentManager;
 
 void userMenu() {
     int choice;
@@ -188,7 +175,8 @@ void adminMenu() {
         cout << "5. Show All Shops\n";
         cout << "6. Delete User\n";
         cout << "7. Remove Shop\n";
-        cout << "8. Logout\n";
+        cout << "8. Refund Payment\n";
+        cout << "9. Logout\n";
         cout << "\nChoose: ";
 
         choice = safeInput<int>();
@@ -216,13 +204,19 @@ void adminMenu() {
             adminManager.removeShop(shopManager);
             break;
         case 8:
+            {
+                PaymentManager paymentManager;
+                paymentManager.refundPayment();
+            }
+            break;
+        case 9:
             adminManager.logoutAdmin();
             cout << "\nAdmin logged out successfully!\n";
             break;
         default:
             cout << "Invalid choice!\n";
         }
-    } while (choice != 8);
+    } while (choice != 9);
 }
 
 void headAdminMenu() {
@@ -240,7 +234,8 @@ void headAdminMenu() {
         cout << "8. Add Admin\n";
         cout << "9. Remove Admin\n";
         cout << "10. Show Statistics\n";
-        cout << "11. Logout\n";
+        cout << "11. Refund Payment\n";
+        cout << "12. Logout\n";
         cout << "\nChoose: ";
 
         choice = safeInput<int>();
@@ -277,6 +272,12 @@ void headAdminMenu() {
             adminManager.showStatistics();
             break;
         case 11:
+            {
+                PaymentManager paymentManager;
+                paymentManager.refundPayment();
+            }
+            break;
+        case 12:
             adminManager.logoutAdmin();
             headAdminManager.logoutHeadAdmin();
             cout << "\nHead admin logged out successfully!\n";
@@ -284,7 +285,7 @@ void headAdminMenu() {
         default:
             cout << "Invalid choice!\n";
         }
-    } while (choice != 11);
+    } while (choice != 12);
 }
 
 void loginFlow() {

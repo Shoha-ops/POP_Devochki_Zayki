@@ -51,6 +51,7 @@ cmake_install.cmake
 
 # User data
 *.txt
+CMakeLists.txt
 *.dat
 
 # Temporary files

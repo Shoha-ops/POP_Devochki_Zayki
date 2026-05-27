@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -11,7 +12,6 @@
 #include "../Order/OrderManager.h"
 #include "../Payment/PaymentManager.h"
 #include "../Shop/ShopManager.h"
-#include "User.h"
 
 using namespace std;
 
@@ -60,6 +60,13 @@ private:
         return true;
     }
 
+    string cleanUserField(string value) const {
+        replace(value.begin(), value.end(), '|', '/');
+        replace(value.begin(), value.end(), ';', ',');
+        replace(value.begin(), value.end(), '#', '-');
+        return value;
+    }
+
     void loadUsers() {
         users.clear();
 
@@ -74,26 +81,31 @@ private:
                 continue;
             }
 
-            stringstream ss(line);
+            stringstream stream(line);
             string idText;
             StoredUser user;
 
-            if (!getline(ss, idText, '|'))
+            if (!getline(stream, idText, '|'))
                 continue;
-            if (!getline(ss, user.name, '|'))
+            if (!getline(stream, user.name, '|'))
                 continue;
-            if (!getline(ss, user.login, '|'))
+            if (!getline(stream, user.login, '|'))
                 continue;
-            if (!getline(ss, user.password, '|'))
+            if (!getline(stream, user.password, '|'))
                 continue;
-            if (!getline(ss, user.email, '|'))
+            if (!getline(stream, user.email, '|'))
                 continue;
 
-            user.id = stoll(idText);
-            users.push_back(user);
+            try {
+                user.id = stoll(idText);
+                users.push_back(user);
 
-            if (user.id >= nextUserId) {
-                nextUserId = user.id + 1;
+                if (user.id >= nextUserId) {
+                    nextUserId = user.id + 1;
+                }
+            }
+            catch (...) {
+                continue;
             }
         }
     }
@@ -101,7 +113,11 @@ private:
     void saveUsers() const {
         ofstream outFile(storagePath, ios::trunc);
         for (const StoredUser& user : users) {
-            outFile << user.id << '|' << user.name << '|' << user.login << '|' << user.password << '|' << user.email << '\n';
+            outFile << user.id << '|'
+                    << cleanUserField(user.name) << '|'
+                    << cleanUserField(user.login) << '|'
+                    << cleanUserField(user.password) << '|'
+                    << cleanUserField(user.email) << '\n';
         }
     }
 
@@ -121,9 +137,11 @@ public:
 
         cout << "Enter name: ";
         getline(cin >> ws, user.name);
+        user.name = cleanUserField(user.name);
 
         cout << "Enter login: ";
         getline(cin >> ws, user.login);
+        user.login = cleanUserField(user.login);
 
         if (findUser(user.login) != nullptr) {
             cout << "Login already exists!\n";
@@ -133,9 +151,11 @@ public:
 
         cout << "Enter password: ";
         getline(cin >> ws, user.password);
+        user.password = cleanUserField(user.password);
 
         cout << "Enter email: ";
         getline(cin >> ws, user.email);
+        user.email = cleanUserField(user.email);
 
         users.push_back(user);
         saveUsers();
@@ -186,12 +206,15 @@ public:
 
         cout << "Enter new name: ";
         getline(cin >> ws, user->name);
+        user->name = cleanUserField(user->name);
 
         cout << "Enter new password: ";
         getline(cin >> ws, user->password);
+        user->password = cleanUserField(user->password);
 
         cout << "Enter new email: ";
         getline(cin >> ws, user->email);
+        user->email = cleanUserField(user->email);
 
         saveUsers();
         cout << "Profile updated.\n";
@@ -202,7 +225,7 @@ public:
             return;
         }
 
-        for (int i = 0; i < users.size(); i++) {
+        for (size_t i = 0; i < users.size(); i++) {
             if (users[i].login == currentLogin) {
                 users.erase(users.begin() + i);
                 saveUsers();

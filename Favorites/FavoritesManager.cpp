@@ -42,16 +42,21 @@ vector<FavoriteProductRecord> loadFavoriteProducts() {
         vector<string> parts = splitFavoriteLine(line);
         if (parts.size() < 9) continue;
 
-        FavoriteProductRecord product;
-        product.id = stoi(parts[0]);
-        product.name = parts[1];
-        product.description = parts[2];
-        product.price = stod(parts[3]);
-        product.stock = stoi(parts[4]);
-        product.category = parts[5];
-        product.shopName = parts[7];
-        product.rating = stod(parts[8]);
-        products.push_back(product);
+        try {
+            FavoriteProductRecord product;
+            product.id = stoi(parts[0]);
+            product.name = parts[1];
+            product.description = parts[2];
+            product.price = stod(parts[3]);
+            product.stock = stoi(parts[4]);
+            product.category = parts[5];
+            product.shopName = parts[7];
+            product.rating = stod(parts[8]);
+            products.push_back(product);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return products;
@@ -85,7 +90,12 @@ vector<pair<string, int>> loadFavoriteList() {
     while (getline(file, line)) {
         vector<string> parts = splitFavoriteLine(line);
         if (parts.size() < 2) continue;
-        favorites.push_back(make_pair(parts[0], stoi(parts[1])));
+        try {
+            favorites.push_back(make_pair(parts[0], stoi(parts[1])));
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return favorites;

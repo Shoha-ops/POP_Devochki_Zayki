@@ -38,6 +38,18 @@ struct PaymentRecord {
     string status;
 };
 
+struct PaymentProductRecord {
+    int id;
+    string name;
+    string description;
+    double price;
+    int stock;
+    string category;
+    string shopLogin;
+    string shopName;
+    double rating;
+};
+
 vector<string> splitPaymentText(const string& text, char delimiter) {
     vector<string> parts;
     string part;
@@ -57,6 +69,60 @@ string cleanPaymentField(string value) {
     return value;
 }
 
+vector<PaymentProductRecord> loadPaymentProducts() {
+    vector<PaymentProductRecord> products;
+    ifstream file("products.txt");
+    string line;
+
+    while (getline(file, line)) {
+        vector<string> parts = splitPaymentText(line, '|');
+        if (parts.size() < 9) continue;
+
+        try {
+            PaymentProductRecord product;
+            product.id = stoi(parts[0]);
+            product.name = parts[1];
+            product.description = parts[2];
+            product.price = stod(parts[3]);
+            product.stock = stoi(parts[4]);
+            product.category = parts[5];
+            product.shopLogin = parts[6];
+            product.shopName = parts[7];
+            product.rating = stod(parts[8]);
+            products.push_back(product);
+        }
+        catch (...) {
+            continue;
+        }
+    }
+
+    return products;
+}
+
+void savePaymentProducts(const vector<PaymentProductRecord>& products) {
+    ofstream file("products.txt", ios::trunc);
+    for (const PaymentProductRecord& product : products) {
+        file << product.id << '|'
+             << cleanPaymentField(product.name) << '|'
+             << cleanPaymentField(product.description) << '|'
+             << fixed << setprecision(2) << product.price << '|'
+             << product.stock << '|'
+             << cleanPaymentField(product.category) << '|'
+             << cleanPaymentField(product.shopLogin) << '|'
+             << cleanPaymentField(product.shopName) << '|'
+             << fixed << setprecision(1) << product.rating << '\n';
+    }
+}
+
+PaymentProductRecord* findPaymentProduct(vector<PaymentProductRecord>& products, int productId) {
+    for (PaymentProductRecord& product : products) {
+        if (product.id == productId) {
+            return &product;
+        }
+    }
+    return nullptr;
+}
+
 vector<PaymentOrderRecord> loadPaymentOrders() {
     vector<PaymentOrderRecord> orders;
     ifstream file("orders.txt");
@@ -66,30 +132,35 @@ vector<PaymentOrderRecord> loadPaymentOrders() {
         vector<string> parts = splitPaymentText(line, '|');
         if (parts.size() < 7) continue;
 
-        PaymentOrderRecord order;
-        order.id = stoi(parts[0]);
-        order.userLogin = parts[1];
-        order.total = stod(parts[2]);
-        order.status = parts[3];
-        order.address = parts[4];
-        order.paymentStatus = parts[5];
+        try {
+            PaymentOrderRecord order;
+            order.id = stoi(parts[0]);
+            order.userLogin = parts[1];
+            order.total = stod(parts[2]);
+            order.status = parts[3];
+            order.address = parts[4];
+            order.paymentStatus = parts[5];
 
-        vector<string> itemParts = splitPaymentText(parts[6], ';');
-        for (const string& itemText : itemParts) {
-            if (itemText.empty()) continue;
-            vector<string> fields = splitPaymentText(itemText, '#');
-            if (fields.size() < 5) continue;
+            vector<string> itemParts = splitPaymentText(parts[6], ';');
+            for (const string& itemText : itemParts) {
+                if (itemText.empty()) continue;
+                vector<string> fields = splitPaymentText(itemText, '#');
+                if (fields.size() < 5) continue;
 
-            PaymentOrderItemRecord item;
-            item.productId = stoi(fields[0]);
-            item.productName = fields[1];
-            item.shopLogin = fields[2];
-            item.quantity = stoi(fields[3]);
-            item.price = stod(fields[4]);
-            order.items.push_back(item);
+                PaymentOrderItemRecord item;
+                item.productId = stoi(fields[0]);
+                item.productName = fields[1];
+                item.shopLogin = fields[2];
+                item.quantity = stoi(fields[3]);
+                item.price = stod(fields[4]);
+                order.items.push_back(item);
+            }
+
+            orders.push_back(order);
         }
-
-        orders.push_back(order);
+        catch (...) {
+            continue;
+        }
     }
 
     return orders;
@@ -156,14 +227,19 @@ vector<PaymentRecord> loadPaymentList() {
         vector<string> parts = splitPaymentText(line, '|');
         if (parts.size() < 6) continue;
 
-        PaymentRecord payment;
-        payment.id = stoi(parts[0]);
-        payment.orderId = stoi(parts[1]);
-        payment.userLogin = parts[2];
-        payment.amount = stod(parts[3]);
-        payment.method = parts[4];
-        payment.status = parts[5];
-        payments.push_back(payment);
+        try {
+            PaymentRecord payment;
+            payment.id = stoi(parts[0]);
+            payment.orderId = stoi(parts[1]);
+            payment.userLogin = parts[2];
+            payment.amount = stod(parts[3]);
+            payment.method = parts[4];
+            payment.status = parts[5];
+            payments.push_back(payment);
+        }
+        catch (...) {
+            continue;
+        }
     }
 
     return payments;
@@ -213,13 +289,13 @@ void PaymentManager::makePayment(string userLogin) {
         return;
     }
 
-    if (order->status == "Cancelled") {
-        cout << "Cancelled order cannot be paid.\n";
+    if (order->status == "Cancelled" || order->status == "Refunded") {
+        cout << "Cancelled or refunded order cannot be paid.\n";
         return;
     }
 
-    if (order->paymentStatus == "Paid") {
-        cout << "Order is already paid.\n";
+    if (order->paymentStatus != "Unpaid") {
+        cout << "Order cannot be paid. Current payment status: " << order->paymentStatus << '\n';
         return;
     }
 
@@ -262,6 +338,14 @@ void PaymentManager::refundPayment() {
         return;
     }
 
+    vector<PaymentProductRecord> products = loadPaymentProducts();
+    for (const PaymentOrderItemRecord& item : order->items) {
+        PaymentProductRecord* product = findPaymentProduct(products, item.productId);
+        if (product != nullptr) {
+            product->stock += item.quantity;
+        }
+    }
+
     vector<PaymentRecord> payments = loadPaymentList();
     PaymentRecord refund;
     refund.id = getNextPaymentId(payments);
@@ -275,6 +359,7 @@ void PaymentManager::refundPayment() {
     order->paymentStatus = "Refunded";
     order->status = "Refunded";
 
+    savePaymentProducts(products);
     savePaymentList(payments);
     savePaymentOrders(orders);
     cout << "Refund completed. Amount: " << order->total << '\n';
